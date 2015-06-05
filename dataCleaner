@@ -1,0 +1,10 @@
+import pandas
+
+
+
+def readCSV():
+    csvfile = input('Enter full file path with filename.extension: ')
+    file = pandas.read_csv(csvfile)
+
+def gather_qr():
+    
