@@ -1,9 +1,16 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jun 01 01:11:52 2015
+
+@author: Shamir
+"""
+
 import pandas
 import numpy as np
 import os
 
 gesture_path = 'C:\\Users\\Shamir\\Desktop\\Grad\\Gesture Stuff\\Data_Multisensor\\'    # use input() to make it interactive
-destination =  'C:\\Users\\Shamir\\Desktop\\broken down files\\'
+destination =  'C:\\Users\\Shamir\\Desktop\\broken down files 1\\'
 fileformat = '.csv'
 backslash = '\\'
 
@@ -35,7 +42,3 @@ for i in range(len(os.listdir(gesture_path))):                                  
             qz = readFile.loc[:, range(3, readFile.shape[1], 5)]                            # qz columns only
             qz.to_csv(destination + str(count) + fileformat, header = False, index = False)
             count += 1
-            
-
-    
-    
