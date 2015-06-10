@@ -10,7 +10,7 @@ import numpy as np
 import os
 
 gesture_path = 'C:\\Users\\Shamir\\Desktop\\Grad\\Gesture Stuff\\Data_Multisensor\\'    # use input() to make it interactive
-destination =  'C:\\Users\\Shamir\\Desktop\\broken down files 1\\'
+destination =  'C:\\Users\\Shamir\\Desktop\\broken down files\\'
 fileformat = '.csv'
 backslash = '\\'
 
