@@ -57,6 +57,15 @@ class DataHandler(object):
                     qz.to_csv(destination + str(count) + fileformat, header = False, index = False)
                     count += 1
                     
+                    
+    def linearInterpolation(self, prev_datapoint, target_datapoint, next_datapoint):
+        denominator = next_datapoint - prev_datapoint
+        numerator = ((target_datapoint - prev_datapoint) * (file.values[i, next_datapoint] - file.values[i, prev_datapoint]))
+        interpolated_value = (numerator/denominator) + file.values[i, prev_datapoint]
+        
+        return interpolated_value
+    
+    
     def removeOutliers(self):
         
         
