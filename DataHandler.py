@@ -66,6 +66,12 @@ class DataHandler(object):
         interpolated_value = (numerator/denominator) + file.values[i, prev_datapoint]
         
         return interpolated_value
+        
+    def 1stDerivative(prev, curr, nexT):
+        derivative = (abs(prev - curr) + abs(curr - nexT)) / abs(prev - nexT)
+        
+        return derivative
+
     
     
     def removeOutliers(self):
