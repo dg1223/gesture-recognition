@@ -36,13 +36,13 @@ def firstDerivative(prev, curr, nexT):
 source = 'C:\\Users\\Shamir\\Desktop\\broken down files\\'   # broken down files
 filelist = os.listdir(source)
 filelist = natsorted(filelist)                                                  # naturally sort the file list
-destination =  'C:\\Users\\Shamir\\Desktop\\denoised2\\'
+destination =  'C:\\Users\\Shamir\\Desktop\\denoised3(final)\\'
 fileformat = '.csv'
 backslash = '\\'
-count = 81
+count = 1
 
 ## Algorithm for filtering noisy peaks
-for eachfile in range(80, 81): # len(filelist)
+for eachfile in range(len(filelist)): # len(filelist)
     
     # fileHandler (can become a different class!)
     csvfile = source + filelist[eachfile]   # full filepath
@@ -139,18 +139,6 @@ for eachfile in range(80, 81): # len(filelist)
     
     for i in range(1, num_rows):#
         index = 1
-#==============================================================================
-#         stdDev1 = np.std(file.values[i,0:9])
-#         stdDev2 = np.std(file.values[i,0:100])
-#         stdDevIncrease = abs(stdDev1 - stdDev2) / stdDev2
-#         # denoise if sample starts with noisy datapoints 
-#         if stdDevIncrease >= 0.50:
-#             print "noisy start detected"
-#             for r in range(10,0,-1):
-#                 prev_point = r - 1
-#                 next_point = r + 1
-#                 file.values[i, r] = linearInterpolation(prev_point, r, next_point*0.999)
-#==============================================================================
                 
         for j in range(num_columns):
             if index == num_columns - 1:
@@ -376,7 +364,8 @@ for eachfile in range(80, 81): # len(filelist)
                 elif index < num_columns - 1:
                     index += 1
                     
-    file = file.drop(range(0,40), axis = 1)                                         # delete 1st 40 points                
+    file = file.drop(range(0,40), axis = 1)                                         # delete 1st 40 points
+    file = file.drop(range(num_columns - 5, num_columns), axis = 1)                # delete last 5 points
     # save data to file             
     file.to_csv(destination + str(count) + fileformat, header = False, index = False)
     count += 1
