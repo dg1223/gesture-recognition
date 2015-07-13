@@ -35,7 +35,7 @@ def firstDerivative(prev, curr, nexT):
 
 source = 'C:\\Users\\Shamir\\Desktop\\broken down files\\'   # broken down files
 filelist = os.listdir(source)
-filelist = natsorted(filelist)                                                  # naturally sort the file list
+filelist = natsorted(filelist)                               # naturally sort the file list
 destination =  'C:\\Users\\Shamir\\Desktop\\denoised3(final)\\'
 fileformat = '.csv'
 backslash = '\\'
@@ -47,7 +47,7 @@ for eachfile in range(len(filelist)): # len(filelist)
     # fileHandler (can become a different class!)
     csvfile = source + filelist[eachfile]   # full filepath
     file = pandas.read_csv(csvfile, header = None)
-    file = file.dropna(axis = 1)                                                    # reject every column that contains at least one NaN value (we lose at least one instance of gesture) 
+    file = file.dropna(axis = 1)                                                    # reject every column that contains at least one NaN value (we lose at least one instance of gesture) - use only for unprocessed datasets
     #file = file.drop(range(0,40), axis = 1)                                         # delete 1st 40 points          
     file.values[1:] = file.values[1:].astype(float)                                 # convert all strings to floats; ignore header columns 
     
