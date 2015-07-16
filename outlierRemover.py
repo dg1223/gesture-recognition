@@ -8,7 +8,7 @@ import pandas
 import os
 import time
 #import matplotlib.pyplot as plt
-import numpy as np
+#import numpy as np
 from scipy.spatial.distance import euclidean
 from natsort import natsorted
 
