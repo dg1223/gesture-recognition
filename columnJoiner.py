@@ -40,6 +40,7 @@ def Join(sourcePath, destinationPath):
             for k in range(num_columns):
                 output_list.append(firstFile.loc [j, k])
                 output_list.append(secondFile.loc[j, k])
+                #print "j = ", j, "k = ", k
                 output_list.append(thirdFile.loc [j, k])
                 output_list.append(fourthFile.loc[j, k])
             if j == 0:    
