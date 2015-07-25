@@ -54,16 +54,15 @@ def Velocity(number_of_rows, number_of_columns, sourceFile):
     distance = 0
     time = number_of_columns / frequency                                              
     for i in range(1, number_of_rows):         
-        for j in range(number_of_columns-1):
+        for j in range(number_of_columns - 1):
             next = j + 1
-            distance += euclidean(sourceFile.values[j], sourceFile.values[next])
+            distance += euclidean(sourceFile.values[i, j], sourceFile.values[i, next])
         vel = distance/time
         velocity = np.vstack((velocity, vel))
     return velocity
 
 
-
-def extractFeatures(filelist, source, destination):
+def extractFeatures(filelist, sourcePath, destinationPath):
     
     for eachfile in range(len(filelist)):               # len(filelist)
 
