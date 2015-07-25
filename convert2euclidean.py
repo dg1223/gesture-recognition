@@ -8,44 +8,85 @@ Created on Thu Jul 23 22:28:29 2015
 import pandas
 import os
 import numpy as np
+import time
 from natsort import natsorted
 from pandas import DataFrame
-from scipy.spatial.distance import euclidean
 
-source_left = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left_combined\\'                       # source folder
-source_right = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right_combined\\'                                      # naturally sort the file list
-destination_left  =  'C:\\Users\\Shamir\\Desktop\\Features\\Left\\'             # gestures performed only with the left hand go here
-destination_right =  'C:\\Users\\Shamir\\Desktop\\Features\\Right\\'            # gestures performed only with the right hand go here
-fileformat = '.csv'
+start = time.clock()                                                            # start counting time (optional)
+
+source_left       = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left_combined\\'  # source folder
+source_right      = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right_combined\\' # naturally sort the file list
+destination_left  = 'C:\\Users\\Shamir\\Desktop\\Euclidean\\Left\\'              # gestures performed only with the left hand go here
+destination_right = 'C:\\Users\\Shamir\\Desktop\\Euclidean\\Right\\'             # gestures performed only with the right hand go here
+fileformat        = '.csv'
 
 def Convert2Euclidean(sourcePath, destinationPath):
+
+    """
+    This function converts Quaterinons to Euler angles and saves it in a CSV file.
     
-    count = 1
-    filelist = os.listdir(sourcePath)
-    filelist = natsorted(filelist)
+    input parameter : sourcePath;      it takes the path of the directory where the files are stored for processing.
+    output parameter: destinationPath; it takes the path of the directory where the new data would be stored in corresponding files. The files are numbered from 1 to n, n being the total number of files.
+    
+    """
+
+    count       = 1                                                             # start count for file numbers
+    output_list = []                                                            # temporary storage list before passing data to an array
+    filelist    = os.listdir(sourcePath)                                        # list all the files in the folder
+    filelist    = natsorted(filelist)                                           # naturally sort the file list; this fixes the problem of having improper file order in the list
     for file in range(len(filelist)):
         
-        alpha = ['alpha']
-        beta =  ['beta']
-        gamma = ['gamma']
-        alpha = np.asarray(alpha)
-        beta = np.asarray(beta)
-        gamma = np.asarray(gamma)
+        #print "reading file # ", file       
+        csvfile            = pandas.read_csv(sourcePath + filelist[file], header = None)    # read csv file
+        csvfile.values[1:] = csvfile.values[1:].astype(float)                   # convert all strings to floats; ignore header columns 
+        num_rows           = len(csvfile)                                       # number of rows in the file
+        num_columns        = len(csvfile.values[0])                             # number of columns in the file
         
-        for i in range(1, number_of_rows):
-            for j in range(0, number_of_columns, 4):
+        # Creater header row
+        for i in range(0, num_columns, 4):
+            output_list.append('alpha')
+            output_list.append('beta')
+            output_list.append('gamma')
+        
+        #print "shape of 1st output_list = ", np.shape(output_list)
+        output_array = np.asarray(output_list)                                  # initialize the storage array with headers
+        output_list  = []                                                       # empty temporary list
+        #print "shape of output_array = ", np.shape(output_array)
+        
+        # loop for conversion to Euclidean angles
+        for i in range(1, num_rows):
+            for j in range(0, num_columns, 4):                                  # we need to take 4 columns in each iteration; 1 quaternion = 4 elements
                 
+                # precalculate indexes of the vector elements of each quaternion for faster memory operation
                 secondIndex = j + 1
                 thirdIndex  = j + 2
                 fourthIndex = j + 3
                 
-                qr = sourceFile.values[i, j]
-                qx = sourceFile.values[i, secondIndex]
-                qy = sourceFile.values[i, thirdIndex]
-                qz = sourceFile.values[i, fourthIndex]
+                qr = csvfile.values[i, j]
+                qx = csvfile.values[i, secondIndex]
+                qy = csvfile.values[i, thirdIndex]
+                qz = csvfile.values[i, fourthIndex]
                 
-                Alpha = np.arctan((2*(qr*qx + qy*qz)) / (1 - 2*(np.square(qx) + np.square(qy)))) * 180/np.pi
-                Beta  = np.arcsin(2*(qr*qy - qx*qz))                                             * 180/np.pi
-                Gamma = np.arctan((2*(qr*qz + qx*qy)) / (1 - 2*(np.square(qy) + np.square(qz)))) * 180/np.pi
+                # Calculate the Euler Angles in degrees (multiplying the radian terms with 180/pi)
+                #print "reading i, j = ", i, j
+                Alpha = np.arctan ((2*(qr*qx + qy*qz)) / (1 - 2*(np.square(qx) + np.square(qy)))) * 180/np.pi                
+                Beta  = np.arcsin  (2*(qr*qy - qx*qz))                                            * 180/np.pi
+                Gamma = np.arctan ((2*(qr*qz + qx*qy)) / (1 - 2*(np.square(qy) + np.square(qz)))) * 180/np.pi
                 
-                alpha = 
+                # save the calculated values in the temporary storage
+                output_list.append(Alpha)
+                output_list.append(Beta)
+                output_list.append(Gamma)
+            
+            #print "shape of 2nd output_list = ", np.shape(output_list)
+            output_array = np.vstack((output_array, output_list))               # insert each converted row into the storage array
+            output_list  = []                                                   # empty temporary list for next iteration
+        
+        output_array = DataFrame(output_array)                                  # convert complete array into a Pandas Dataframe 
+        output_array.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)   # write the dataframe to a csv file
+        count += 1                                                              # increment file counter
+            
+Convert2Euclidean(source_left, destination_left)
+Convert2Euclidean(source_right, destination_right)
+
+print time.clock() - start, 'seconds taken to execute the program' 
