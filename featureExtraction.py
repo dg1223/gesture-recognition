@@ -11,9 +11,12 @@ import numpy as np
 from natsort import natsorted
 from pandas import DataFrame
 from scipy.spatial.distance import euclidean
+from itertools import combinations
 
 source_left = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left\\'                       # source folder
 source_right = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right\\'
+source_left_sorted = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left_sorted\\'         # source folder
+source_right_sorted = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right_sorted\\'
 filelist_left = os.listdir(source_left)
 filelist_left = natsorted(filelist_left)
 filelist_right = os.listdir(source_right)
@@ -21,6 +24,7 @@ filelist_right = natsorted(filelist_right)                                      
 destination_left  =  'C:\\Users\\Shamir\\Desktop\\Features\\Left\\'             # gestures performed only with the left hand go here
 destination_right =  'C:\\Users\\Shamir\\Desktop\\Features\\Right\\'            # gestures performed only with the right hand go here
 fileformat = '.csv'
+backslash = '\\'
 count = 1
 frequency_quat = 110                                                            # 110 Hz
 frequency_euc  = 82.5                                                           # 82.5 Hz
@@ -97,7 +101,7 @@ def AngularVelocity(number_of_rows, number_of_columns, sourceFile):
             gamma      = j + 2
             sourceFile.values[i, alpha] = (precessionVelocity * np.sin(sourceFile.values[i, gamma]) * np.sin(sourceFile.values[i, beta])) + (nutationVelocity * np.cos(sourceFile.values[i, gamma]))    # alpha component
             sourceFile.values[i, beta]  = (precessionVelocity * np.cos(sourceFile.values[i, gamma]) * np.sin(sourceFile.values[i, beta])) - (nutationVelocity * np.sin(sourceFile.values[i, gamma]))    # beta component
-            sourceFile.values[i, beta]  = (precessionVelocity * np.cos(sourceFile.values[i, beta])  * spinVelocity                                                                                      # gamma compomemt
+            sourceFile.values[i, beta]  = (precessionVelocity * np.cos(sourceFile.values[i, beta])) * spinVelocity                                                                                      # gamma compomemt
         
         averageAlpha = np.sum(sourceFile.values[i, range(0, number_of_columns, 3)]) / time
         averageBeta  = np.sum(sourceFile.values[i, range(1, number_of_columns, 3)]) / time
@@ -106,9 +110,39 @@ def AngularVelocity(number_of_rows, number_of_columns, sourceFile):
         velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
         velocityBeta   = np.vstack((velocityBeta,  averageBeta))
         velocityGamma  = np.vstack((velocityGamma, averageGamma))
-        
     
-    return
+    columnSize = len(velocityAlpha)    
+    angular_velocity = np.zeros((len(velocityAlpha), 3))
+    
+    # Return the column vectors in a single 2D array
+    angular_velocity[:,0] = velocityAlpha.reshape(1, columnSize)
+    angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
+    angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
+    
+    return angular_velocity
+
+
+def Covariance(number_of_rows, number_of_columns, sourcePath):
+    
+    sensor_combos = np.asarray(list(combinations(range(15,20), 2)))
+    
+    for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
+        gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
+        
+        for j in range(len(os.listdir(sourcePath + gesture))):                            # we have 3 files corresponding to 3 datasets (train, cross-validation, test)
+            dataset = os.listdir(sourcePath + gesture)[j]                                 # Train, Cross Validation, Test
+            
+            for k in range(len(sensor_combos)):                                           # we have 10 combinations 
+                ## this section can be optimized for greater computational efficiency                
+                sensorFolder1 = 'Sensor' + str(sensor_combos[k,0])
+                sensorFolder2 = 'Sensor' + str(sensor_combos[k,1])                
+                sensor1 = os.listdir(sourcePath + gesture + backslash + dataset + backslash + sensorFolder1)        # desired csv files in the folder           
+                sensor2 = os.listdir(sourcePath + gesture + backslash + dataset + backslash + sensorFolder2)                
+                
+                for l in range(len(sensor1)):
+                    csvfile1 = sourcePath + gesture + backslash + dataset + backslash + sensorFolder1 + backslash + sensor1[l]   # full filepath
+                    csvfile2 = sourcePath + gesture + backslash + dataset + backslash + sensorFolder1 + backslash + sensor2[l]
+    
 
 def extractFeatures(filelist, sourcePath, destinationPath):
     
