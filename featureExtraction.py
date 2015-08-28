@@ -35,6 +35,7 @@ def Variance(number_of_rows, sourceFile):
     
     variance = ['variance']
     variance = np.asarray(variance)
+    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
     for i in range(1, number_of_rows):
         Var = np.var(sourceFile.values[i])
         variance = np.vstack((variance, Var))
@@ -46,6 +47,7 @@ def Range(number_of_rows, sourceFile):
     
     range_of_row = ['range']
     range_of_row = np.asarray(range_of_row)
+    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
     for i in range(1, number_of_rows):
         ran = np.ptp(sourceFile.values[i])
         range_of_row = np.vstack((range_of_row, ran))
@@ -57,6 +59,7 @@ def Velocity(number_of_rows, number_of_columns, sourceFile):
     
     velocity = ['velocity']
     velocity = np.asarray(velocity)
+    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
     distance = 0
     time = number_of_columns / frequency_quat                                              
     for i in range(1, number_of_rows):         
@@ -74,6 +77,7 @@ def AngularVelocity(number_of_rows, number_of_columns, sourceFile):
     velocityAlpha  = ['velocityAlpha']
     velocityBeta   = ['velocityBeta']
     velocityGamma  = ['velocityGamma']
+    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
     velocityAlpha  = np.asarray(velocityAlpha)
     velocityBeta   = np.asarray(velocityBeta)
     velocityGamma  = np.asarray(velocityGamma)
@@ -141,8 +145,33 @@ def Covariance(number_of_rows, number_of_columns, sourcePath):
                 
                 for l in range(len(sensor1)):
                     csvfile1 = sourcePath + gesture + backslash + dataset + backslash + sensorFolder1 + backslash + sensor1[l]   # full filepath
-                    csvfile2 = sourcePath + gesture + backslash + dataset + backslash + sensorFolder1 + backslash + sensor2[l]
-    
+                    csvfile2 = sourcePath + gesture + backslash + dataset + backslash + sensorFolder2 + backslash + sensor2[l]
+                    readFile1 = pandas.read_csv(csvfile1, header = None)
+                    readFile2 = pandas.read_csv(csvfile2, header = None)
+
+                    difference_in_length = np.abs(len(readFile1.values[1]) - len(readFile2.values[1]))
+                    
+                    if difference_in_length > 0 and len(readFile1.values[1]) > len(readFile2.values[1]):
+                        readFile1 = readFile1.drop(range(0, difference_in_length), axis = 1)
+                    elif difference_in_length > 0 and len(readFile2.values[1]) > len(readFile1.values[1]):
+                        readFile2 = readFile2.drop(range(0, difference_in_length), axis = 1)
+                        
+                    readFile1.values[1:] = readFile1.values[1:].astype(float)
+                    readFile2.values[1:] = readFile2.values[1:].astype(float)
+                    
+                    covariance = ['Cov_' + sensorFolder1[6:] + '_' + sensorFolder2[6:] + '_' + readFile1.values[0,0]]
+                    covariance = np.asarray(covariance)
+                    
+                    for m in range(1, number_of_rows):
+                        ## need to add code to check if number_of_rows matches
+                        if  == 1:
+                            cov = np.cov(readFile1.values[m], readFile2.values[m], bias = 1)[0,1]
+                            covariance = np.vstack((covariance, cov))
+                            covariance_array = covariance.copy()
+                        else:
+                            cov = np.cov(readFile1.values[m], readFile2.values[m], bias = 1)[0,1]
+                            covariance = np.vstack((covariance, cov))
+                            covariance_array = np.hstack(covariance_array, covariance)
 
 def extractFeatures(filelist, sourcePath, destinationPath):
     
