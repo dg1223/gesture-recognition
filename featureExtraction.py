@@ -135,6 +135,12 @@ def Covariance(number_of_rows, number_of_columns, sourcePath):
         
         for j in range(len(os.listdir(sourcePath + gesture))):                            # we have 3 files corresponding to 3 datasets (train, cross-validation, test)
             dataset = os.listdir(sourcePath + gesture)[j]                                 # Train, Cross Validation, Test
+            copy = False
+            
+            #a_sensor_folder = os.listdir(sourcePath + gesture + backslash + dataset + backslash)[0]
+            #a_file_in_dataset = os.listdir(sourcePath + gesture + backslash + dataset + backslash + a_sensor_folder)[0]
+            #read_the_file = pandas.read_csv(sourcePath + gesture + backslash + dataset + backslash + a_sensor_folder + backslash + a_file_in_dataset)
+            covariance_array = []
             
             for k in range(len(sensor_combos)):                                           # we have 10 combinations 
                 ## this section can be optimized for greater computational efficiency                
@@ -160,18 +166,24 @@ def Covariance(number_of_rows, number_of_columns, sourcePath):
                     readFile2.values[1:] = readFile2.values[1:].astype(float)
                     
                     covariance = ['Cov_' + sensorFolder1[6:] + '_' + sensorFolder2[6:] + '_' + readFile1.values[0,0]]
+                    print covariance
                     covariance = np.asarray(covariance)
                     
-                    for m in range(1, number_of_rows):
-                        ## need to add code to check if number_of_rows matches
-                        if  == 1:
+                    if copy == True:
+                        for m in range(1, number_of_rows):                      # for every two files
+                        ## need to add code to check if number_of_rows matches                            
                             cov = np.cov(readFile1.values[m], readFile2.values[m], bias = 1)[0,1]
                             covariance = np.vstack((covariance, cov))
-                            covariance_array = covariance.copy()
-                        else:
+                        covariance_array = np.hstack((covariance_array, covariance))                            
+                    else:
+                        for m in range(1, number_of_rows):
                             cov = np.cov(readFile1.values[m], readFile2.values[m], bias = 1)[0,1]
                             covariance = np.vstack((covariance, cov))
-                            covariance_array = np.hstack(covariance_array, covariance)
+                        #covariance_array = np.zeros([len(readFile1.values),1])
+                        covariance_array = covariance.copy()
+                        copy = True
+
+
 
 def extractFeatures(filelist, sourcePath, destinationPath):
     
