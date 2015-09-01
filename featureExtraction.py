@@ -31,101 +31,256 @@ frequency_euc  = 82.5                                                           
 
 
 # function for extracting Variance
-def Variance(number_of_rows, sourceFile):
+def Variance(number_of_rows, sourcePath):
     
-    variance = ['variance']
-    variance = np.asarray(variance)
-    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
-    for i in range(1, number_of_rows):
-        Var = np.var(sourceFile.values[i])
-        variance = np.vstack((variance, Var))
-    return variance
+    for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
+        gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
+        
+        for j in range(len(os.listdir(sourcePath + gesture))):                            # we have 3 files corresponding to 3 datasets (train, cross-validation, test)
+            dataset = os.listdir(sourcePath + gesture)[j]                                 # Train, Cross Validation, Test
+            copy = False            
+            variance_array = []
+            
+            for k in range(len(os.listdir(sourcePath + gesture + backslash + dataset))):
+                sensor = os.listdir(sourcePath + gesture + backslash + dataset)[k]
+                sensorFolder = os.listdir(sourcePath + gesture + backslash + dataset + backslash + sensor)
+                
+                for l in range(len(sensorFolder)):
+                    csvfile = sourcePath + gesture + backslash + dataset + backslash + sensor + backslash + sensorFolder[l]   # full filepath
+                    readFile = pandas.read_csv(csvfile, header = None)
+                    readFile.values[1:] = readFile.values[1:].astype(float)
+                    
+                    variance = ['Var_' + sensor[6:] + '_' + readFile.values[0,0]]
+                    print variance
+                    variance = np.asarray(variance)
+                    
+                    if copy == True:
+                        for m in range(1, number_of_rows):                      # for every two files |||len(readFile.values)|||
+                        ## need to add code to check if number_of_rows matches                            
+                            Var = np.var(readFile.values[m])
+                            variance = np.vstack((variance, Var))
+                        variance_array = np.hstack((variance_array, variance))                            
+                    else:
+                        for m in range(1, number_of_rows):
+                            Var = np.var(readFile.values[m])
+                            variance = np.vstack((variance, Var))
+                        #covariance_array = np.zeros([len(readFile1.values),1])
+                        variance_array = variance.copy()
+                        copy = True            
+    return variance_array
         
         
 # function for extracting Range       
-def Range(number_of_rows, sourceFile):
+def Range(number_of_rows, sourcePath):
     
-    range_of_row = ['range']
-    range_of_row = np.asarray(range_of_row)
-    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
-    for i in range(1, number_of_rows):
-        ran = np.ptp(sourceFile.values[i])
-        range_of_row = np.vstack((range_of_row, ran))
-    return range_of_row
-
+    for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
+        gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
+        
+        for j in range(len(os.listdir(sourcePath + gesture))):                            # we have 3 files corresponding to 3 datasets (train, cross-validation, test)
+            dataset = os.listdir(sourcePath + gesture)[j]                                 # Train, Cross Validation, Test
+            copy = False            
+            range_array = []
+            
+            for k in range(len(os.listdir(sourcePath + gesture + backslash + dataset))):
+                sensor = os.listdir(sourcePath + gesture + backslash + dataset)[k]
+                sensorFolder = os.listdir(sourcePath + gesture + backslash + dataset + backslash + sensor)
+                
+                for l in range(len(sensorFolder)):
+                    csvfile = sourcePath + gesture + backslash + dataset + backslash + sensor + backslash + sensorFolder[l]   # full filepath
+                    readFile = pandas.read_csv(csvfile, header = None)
+                    readFile.values[1:] = readFile.values[1:].astype(float)
+                    
+                    range_header = ['Range_' + sensor[6:] + '_' + readFile.values[0,0]]
+                    print range_header
+                    range_header = np.asarray(range_header)
+                    
+                    if copy == True:
+                        for m in range(1, number_of_rows):                      # for every two files
+                        ## need to add code to check if number_of_rows matches                            
+                            Range = np.ptp(readFile.values[m])
+                            range_header = np.vstack((range_header, Range))
+                        range_array = np.hstack((range_array, range_header))                            
+                    else:
+                        for m in range(1, number_of_rows):
+                            Range = np.ptp(readFile.values[m])
+                            range_header = np.vstack((range_header, Range))
+                        #covariance_array = np.zeros([len(readFile1.values),1])
+                        range_array = range_header.copy()
+                        copy = True            
+    return range_array
+    
 
 # function for extracting Velocity
-def Velocity(number_of_rows, number_of_columns, sourceFile):
+def Velocity(number_of_rows, number_of_columns, sourcePath):
     
-    velocity = ['velocity']
-    velocity = np.asarray(velocity)
-    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
-    distance = 0
-    time = number_of_columns / frequency_quat                                              
-    for i in range(1, number_of_rows):         
-        for j in range(number_of_columns - 1):
-            next = j + 1
-            distance += euclidean(sourceFile.values[i, j], sourceFile.values[i, next])
-        vel = distance/time
-        velocity = np.vstack((velocity, vel))
-    return velocity
+    for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
+        gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
+        
+        for j in range(len(os.listdir(sourcePath + gesture))):                            # we have 3 files corresponding to 3 datasets (train, cross-validation, test)
+            dataset = os.listdir(sourcePath + gesture)[j]                                 # Train, Cross Validation, Test
+            copy = False            
+            velocity_array = []
+            
+            for k in range(len(os.listdir(sourcePath + gesture + backslash + dataset))):
+                sensor = os.listdir(sourcePath + gesture + backslash + dataset)[k]
+                sensorFolder = os.listdir(sourcePath + gesture + backslash + dataset + backslash + sensor)
+                
+                for l in range(len(sensorFolder)):
+                    csvfile = sourcePath + gesture + backslash + dataset + backslash + sensor + backslash + sensorFolder[l]   # full filepath
+                    readFile = pandas.read_csv(csvfile, header = None)
+                    readFile.values[1:] = readFile.values[1:].astype(float)
+                    
+                    velocity = ['Range_' + sensor[6:] + '_' + readFile.values[0,0]]
+                    print velocity
+                    velocity = np.asarray(velocity)
+                    distance = 0
+                    time = number_of_columns / frequency_quat
+                    
+                    if copy == True:
+                        for m in range(1, number_of_rows):                      # for every two files
+                            for n in range(number_of_columns - 1):
+                        ## need to add code to check if number_of_rows matches 
+                                next_index = n + 1
+                                distance += euclidean(readFile.values[m, n], readFile.values[m, next_index])
+                            vel = distance/time
+                            velocity = np.vstack((velocity, vel)) 
+                        velocity_array = np.hstack((velocity_array, velocity))                                            
+                    else:
+                        for m in range(1, number_of_rows):
+                            for n in range(number_of_columns - 1):
+                                next_index = n + 1
+                                distance += euclidean(readFile.values[m, n], readFile.values[m, next_index])
+                            vel = distance/time
+                            velocity = np.vstack((velocity, vel))
+                        velocity_array = velocity.copy()
+                        copy = True
+    return velocity_array
 
 
 # function for extracting Angular Velocity
-def AngularVelocity(number_of_rows, number_of_columns, sourceFile):
+def AngularVelocity(number_of_rows, number_of_columns, sourcePath):
     
-    velocityAlpha  = ['velocityAlpha']
-    velocityBeta   = ['velocityBeta']
-    velocityGamma  = ['velocityGamma']
-    sourceFile.values[1:] = sourceFile.values[1:].astype(float)
-    velocityAlpha  = np.asarray(velocityAlpha)
-    velocityBeta   = np.asarray(velocityBeta)
-    velocityGamma  = np.asarray(velocityGamma)
-    time = number_of_columns / frequency_euc
-    for i in range(1, number_of_rows):
-        precession, nutation, spin = 0, 0, 0
-                         
-        for j in range(0, number_of_columns - 5, 3):            
-            alpha      = j
-            beta       = j + 1          
-            gamma      = j + 2
-            alphaNext  = j + 3
-            betaNext   = j + 4          
-            gammaNext  = j + 5
-            precession += euclidean(sourceFile.values[i, alpha], sourceFile.values[i, alphaNext])
-            nutation   += euclidean(sourceFile.values[i, beta],  sourceFile.values[i, betaNext])
-            spin       += euclidean(sourceFile.values[i, gamma], sourceFile.values[i, gammaNext])
-        precessionVelocity = precession/time
-        nutationVelocity   = nutation/time
-        spinVelocity       = spin/time
-        
-        for j in range(0, number_of_columns - 3, 3):
-            alpha      = j
-            beta       = j + 1          
-            gamma      = j + 2
-            sourceFile.values[i, alpha] = (precessionVelocity * np.sin(sourceFile.values[i, gamma]) * np.sin(sourceFile.values[i, beta])) + (nutationVelocity * np.cos(sourceFile.values[i, gamma]))    # alpha component
-            sourceFile.values[i, beta]  = (precessionVelocity * np.cos(sourceFile.values[i, gamma]) * np.sin(sourceFile.values[i, beta])) - (nutationVelocity * np.sin(sourceFile.values[i, gamma]))    # beta component
-            sourceFile.values[i, beta]  = (precessionVelocity * np.cos(sourceFile.values[i, beta])) * spinVelocity                                                                                      # gamma compomemt
-        
-        averageAlpha = np.sum(sourceFile.values[i, range(0, number_of_columns, 3)]) / time
-        averageBeta  = np.sum(sourceFile.values[i, range(1, number_of_columns, 3)]) / time
-        averageGamma = np.sum(sourceFile.values[i, range(2, number_of_columns, 3)]) / time
-        
-        velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
-        velocityBeta   = np.vstack((velocityBeta,  averageBeta))
-        velocityGamma  = np.vstack((velocityGamma, averageGamma))
+    for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
+        gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
     
-    columnSize = len(velocityAlpha)    
-    angular_velocity = np.zeros((len(velocityAlpha), 3))
+        for j in range(len(os.listdir(sourcePath + gesture))):                            # we have 3 files corresponding to 3 datasets (train, cross-validation, test)
+            dataset = os.listdir(sourcePath + gesture)[j]                                 # Train, Cross Validation, Test
+            copy = False            
+            AngVel_array = []
+            
+            for k in range(len(os.listdir(sourcePath + gesture + backslash + dataset))):
+                sensor = os.listdir(sourcePath + gesture + backslash + dataset)[k]
+                sensorFolder = os.listdir(sourcePath + gesture + backslash + dataset + backslash + sensor)
+                
+                for l in range(len(sensorFolder)):
+                    csvfile = sourcePath + gesture + backslash + dataset + backslash + sensor + backslash + sensorFolder[l]   # full filepath
+                    readFile = pandas.read_csv(csvfile, header = None)
+                    readFile.values[1:] = readFile.values[1:].astype(float)
+                    
+                    velocityAlpha = ['Alpha_' + sensor[6:] + '_' + readFile.values[0,0]]
+                    velocityBeta  = ['Beta_'  + sensor[6:] + '_' + readFile.values[0,0]]
+                    velocityGamma = ['Gamma_' + sensor[6:] + '_' + readFile.values[0,0]]
+                    print velocityAlpha
+                    velocityAlpha = np.asarray(velocityAlpha)
+                    velocityBeta  = np.asarray(velocityBeta)
+                    velocityGamma = np.asarray(velocityGamma)
+                    
+                    time = np.shape(readFile.values)[1] / frequency_euc
+                    
+                    if copy == True:
+                        for m in range(1, len(readFile.values)):                      # for every two files
+                        ## need to add code to check if number_of_rows matches
+                            precession, nutation, spin = 0, 0, 0
+                            
+                            for n in range(0, np.shape(readFile.values)[1] - 5, 3):
+                                alpha      = n
+                                beta       = n + 1          
+                                gamma      = n + 2
+                                alphaNext  = n + 3
+                                betaNext   = n + 4          
+                                gammaNext  = n + 5
+                                precession += euclidean(readFile.values[m, alpha], readFile.values[m, alphaNext])
+                                nutation   += euclidean(readFile.values[m, beta],  readFile.values[m, betaNext])
+                                spin       += euclidean(readFile.values[m, gamma], readFile.values[m, gammaNext])
+                            precessionVelocity = precession/time
+                            nutationVelocity   = nutation/time
+                            spinVelocity       = spin/time
+                            
+                            for n in range(0, np.shape(readFile.values)[1] - 3, 3):
+                                alpha      = n
+                                beta       = n + 1          
+                                gamma      = n + 2
+                                readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
+                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
+                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                            
+                            averageAlpha = np.sum(readFile.values[m, range(0, np.shape(readFile.values)[1], 3)]) / time
+                            averageBeta  = np.sum(readFile.values[m, range(1, np.shape(readFile.values)[1], 3)]) / time
+                            averageGamma = np.sum(readFile.values[m, range(2, np.shape(readFile.values)[1], 3)]) / time
+                            
+                            velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
+                            velocityBeta   = np.vstack((velocityBeta,  averageBeta))
+                            velocityGamma  = np.vstack((velocityGamma, averageGamma))
+                            
+                        columnSize = len(velocityAlpha)    
+                        angular_velocity = np.zeros((len(velocityAlpha), 3))
+                        angular_velocity = angular_velocity.astype(str)             # to avoid string to float conversion error
+                        
+                        # Return the column vectors in a single 2D array
+                        angular_velocity[:,0] = velocityAlpha.reshape(1, columnSize)                          
+                        angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
+                        angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
+                        
+                        AngVel_array = np.hstack((AngVel_array, angular_velocity))                                                       
+                    else:
+                        for m in range(1, len(readFile.values)):                      # for every two files
+                        ## need to add code to check if number_of_rows matches
+                            precession, nutation, spin = 0, 0, 0
+                            
+                            for n in range(0, np.shape(readFile.values)[1] - 5, 3):
+                                alpha      = n
+                                beta       = n + 1          
+                                gamma      = n + 2
+                                alphaNext  = n + 3
+                                betaNext   = n + 4          
+                                gammaNext  = n + 5
+                                precession += euclidean(readFile.values[m, alpha], readFile.values[m, alphaNext])
+                                nutation   += euclidean(readFile.values[m, beta],  readFile.values[m, betaNext])
+                                spin       += euclidean(readFile.values[m, gamma], readFile.values[m, gammaNext])
+                            precessionVelocity = precession/time
+                            nutationVelocity   = nutation/time
+                            spinVelocity       = spin/time
+                            
+                            for n in range(0, np.shape(readFile.values)[1] - 3, 3):
+                                alpha      = n
+                                beta       = n + 1          
+                                gamma      = n + 2
+                                readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
+                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
+                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                            
+                            averageAlpha = np.sum(readFile.values[m, range(0, np.shape(readFile.values)[1], 3)]) / time
+                            averageBeta  = np.sum(readFile.values[m, range(1, np.shape(readFile.values)[1], 3)]) / time
+                            averageGamma = np.sum(readFile.values[m, range(2, np.shape(readFile.values)[1], 3)]) / time
+                            
+                            velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
+                            velocityBeta   = np.vstack((velocityBeta,  averageBeta))
+                            velocityGamma  = np.vstack((velocityGamma, averageGamma))
+                            
+                        columnSize = len(velocityAlpha)    
+                        angular_velocity = np.zeros((len(velocityAlpha), 3))
+                        angular_velocity = angular_velocity.astype(str)
+                        
+                        # Return the column vectors in a single 2D array
+                        angular_velocity[:,0] = velocityAlpha.reshape(1, columnSize)
+                        angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
+                        angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
+                        
+                        AngVel_array = angular_velocity.copy()
+                        copy = True
+    return AngVel_array
     
-    # Return the column vectors in a single 2D array
-    angular_velocity[:,0] = velocityAlpha.reshape(1, columnSize)
-    angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
-    angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
     
-    return angular_velocity
-
-
 def Covariance(number_of_rows, number_of_columns, sourcePath):
     
     sensor_combos = np.asarray(list(combinations(range(15,20), 2)))
@@ -182,7 +337,7 @@ def Covariance(number_of_rows, number_of_columns, sourcePath):
                         #covariance_array = np.zeros([len(readFile1.values),1])
                         covariance_array = covariance.copy()
                         copy = True
-
+    return covariance_array
 
 
 def extractFeatures(filelist, sourcePath, destinationPath):
@@ -191,6 +346,7 @@ def extractFeatures(filelist, sourcePath, destinationPath):
 
         csvfile = source + filelist[eachfile]                                       # full filepath
         file = pandas.read_csv(csvfile, header = None)
+        
         file.values[1:] = file.values[1:].astype(float)                             # convert all strings to floats; ignore header columns
         num_rows = len(file)                                                        # number of rows in the dataset
         num_columns = len(file.values[0])
