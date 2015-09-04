@@ -11,6 +11,7 @@ import numpy as np
 import time
 from natsort import natsorted
 from pandas import DataFrame
+from math import isnan
 
 start = time.clock()                                                            # start counting time (optional)
 
@@ -34,7 +35,7 @@ def Convert2Euclidean(sourcePath, destinationPath):
     output_list = []                                                            # temporary storage list before passing data to an array
     filelist    = os.listdir(sourcePath)                                        # list all the files in the folder
     filelist    = natsorted(filelist)                                           # naturally sort the file list; this fixes the problem of having improper file order in the list
-    for file in range(len(filelist)):
+    for file in range(1,2):       # len(filelist)
         
         #print "reading file # ", file       
         csvfile            = pandas.read_csv(sourcePath + filelist[file], header = None)    # read csv file
@@ -69,8 +70,25 @@ def Convert2Euclidean(sourcePath, destinationPath):
                 
                 # Calculate the Euler Angles in degrees (multiplying the radian terms with 180/pi)
                 #print "reading i, j = ", i, j
-                Alpha = np.arctan ((2*(qr*qx + qy*qz)) / (1 - 2*(np.square(qx) + np.square(qy)))) * 180/np.pi                
-                Beta  = np.arcsin  (2*(qr*qy - qx*qz))                                            * 180/np.pi
+                Alpha = np.arctan ((2*(qr*qx + qy*qz)) / (1 - 2*(np.square(qx) + np.square(qy)))) * 180/np.pi    
+                
+                ## Major bug, possibly due to noise. This test value, given that the condition becomes true, should not be used for actual analysis. Instead, please filter the noise through the modified filter.
+                test = 2*(qr*qy - qx*qz)                
+                #if test < -1.0:
+                    #test = -1.0
+                #elif test > 1.0:
+                    #test = 1.0
+                    
+                Beta  = np.arcsin (test)                                                          * 180/np.pi
+                
+                #print Beta                    
+                #if isnan(Beta) == True:
+                    #print "qr = ", qr
+                    #print "qx = ", qx
+                    #print "qy = ", qy
+                    #print "qz = ", qz
+                    #break
+                
                 Gamma = np.arctan ((2*(qr*qz + qx*qy)) / (1 - 2*(np.square(qy) + np.square(qz)))) * 180/np.pi
                 
                 # save the calculated values in the temporary storage
@@ -83,7 +101,7 @@ def Convert2Euclidean(sourcePath, destinationPath):
             output_list  = []                                                   # empty temporary list for next iteration
         
         output_array = DataFrame(output_array)                                  # convert complete array into a Pandas Dataframe 
-        output_array.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)   # write the dataframe to a csv file
+        #output_array.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)   # write the dataframe to a csv file
         count += 1                                                              # increment file counter
             
 Convert2Euclidean(source_left, destination_left)

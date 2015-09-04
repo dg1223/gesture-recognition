@@ -365,7 +365,7 @@ def extractFeatures(sourcePath, destinationPath):
     
     # fullFile = pandas.concat([fullFile1, fullFile2, fullFile3, fullFile4, fullFile5], axis = 1)       # comprehensive file structure
     
-    for i in raange(len(os.listdir(sourcePath))):
+    for i in range(len(os.listdir(sourcePath))):
         
     
     
