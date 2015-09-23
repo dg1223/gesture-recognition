@@ -33,10 +33,12 @@ def firstDerivative(prev, curr, nexT):
         #print 'Two identical datapoints:', detail
         pass
 
-source = 'C:\\Users\\Shamir\\Desktop\\broken down files\\'   # broken down files
+#source = 'C:\\Users\\Shamir\\Desktop\\broken down files\\'   # broken down files
+source = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Broken down files\\P1\\'
 filelist = os.listdir(source)
 filelist = natsorted(filelist)                               # naturally sort the file list
-destination =  'C:\\Users\\Shamir\\Desktop\\denoised3(final)\\'
+#destination =  'C:\\Users\\Shamir\\Desktop\\denoised3(final)\\'
+destination =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Denosed_allValues\\P1\\'
 fileformat = '.csv'
 backslash = '\\'
 count = 1
@@ -47,7 +49,7 @@ for eachfile in range(len(filelist)): # len(filelist)
     # fileHandler (can become a different class!)
     csvfile = source + filelist[eachfile]   # full filepath
     file = pandas.read_csv(csvfile, header = None)
-    file = file.dropna(axis = 1)                                                    # reject every column that contains at least one NaN value (we lose at least one instance of gesture) - use only for unprocessed datasets
+    #file = file.dropna(axis = 1)                                                    # reject every column that contains at least one NaN value (we lose at least one instance of gesture) - use only for unprocessed datasets
     #file = file.drop(range(0,40), axis = 1)                                         # delete 1st 40 points          
     file.values[1:] = file.values[1:].astype(float)                                 # convert all strings to floats; ignore header columns 
     
@@ -58,7 +60,7 @@ for eachfile in range(len(filelist)): # len(filelist)
     column_limit = num_columns - 1                                                  # boundary condition for iterating through columns
     thresh = 0.12                                                                   # threshold to find peaks (noisy values based-on euclidean distance)
      
-    # start denoising every dataset               
+    # start denoising every file (dataset)               
     for i in range(1, num_rows): # 1, num_rows
         index = 1                                                               # index of current datapoint       
                                                           
@@ -364,8 +366,9 @@ for eachfile in range(len(filelist)): # len(filelist)
                 elif index < num_columns - 1:
                     index += 1
                     
-    file = file.drop(range(0,40), axis = 1)                                         # delete 1st 40 points
-    file = file.drop(range(num_columns - 5, num_columns), axis = 1)                # delete last 5 points
+    #file = file.drop(range(0,40), axis = 1)                                         # delete 1st 40 points
+    #file = file.drop(range(num_columns - , num_columns), axis = 1)                # delete last 5 points
+    
     # save data to file             
     file.to_csv(destination + str(count) + fileformat, header = False, index = False)
     count += 1
