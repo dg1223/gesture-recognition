@@ -100,62 +100,83 @@ Created on Sat Aug 29 00:07:11 2015
 #==============================================================================
          
 for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
+    print 'i = ', i    
     gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
-    dataset = os.listdir(sourcePath + gesture)[0]                                     # Train, Cross Validation, Test
+    #dataset = os.listdir(sourcePath + gesture)[0]                                     # Train, Cross Validation, Test
     copy = False            
     AngVel_array = []
     
-    for k in range(len(os.listdir(sourcePath + gesture + backslash + dataset))):
-        sensor = os.listdir(sourcePath + gesture + backslash + dataset)[k]            # Sensor15, Sensor16, Sensor17, Sensor18, Sensor19 
-        sensorFolder = os.listdir(sourcePath + gesture + backslash + dataset + backslash + sensor)
+    for k in range(len(os.listdir(sourcePath + gesture))):
+        sensor = os.listdir(sourcePath + gesture)[k]            # Sensor15, Sensor16, Sensor17, Sensor18, Sensor19 
+        sensorFolder = os.listdir(sourcePath + gesture + backslash + sensor)
+        print sensorFolder
         
         for l in range(len(sensorFolder)):
-            csvfile = sourcePath + gesture + backslash + dataset + backslash + sensor + backslash + sensorFolder[l]   # full filepath
+            csvfile = sourcePath + gesture + backslash + sensor + backslash + sensorFolder[l]   # full filepath
             readFile = pandas.read_csv(csvfile, header = None)
             readFile.values[1:] = readFile.values[1:].astype(float)
             
             velocityAlpha = ['Precession_' + sensor[6:]]
             velocityBeta  = ['Nutation_'   + sensor[6:]]
             velocityGamma = ['Spin_'       + sensor[6:]]
-            print velocityAlpha
+            #print velocityAlpha
             velocityAlpha = np.asarray(velocityAlpha)
             velocityBeta  = np.asarray(velocityBeta)
             velocityGamma = np.asarray(velocityGamma)
             
             time = np.shape(readFile.values)[1] / frequency_euc
             
+                       
             if copy == True:
-                for m in range(1, len(readFile.values)):                      # for every two files
+                print 'This is the If phase'
+                for m in range(1, len(readFile.values)):                      # for every two files ???
                 ## need to add code to check if number_of_rows matches
                     precession, nutation, spin = 0, 0, 0
-                    
-                    for n in range(0, np.shape(readFile.values)[1] - 5, 3):
+                                        
+                    for n in range(0, np.shape(readFile.values)[1] - 5, 3):                                                
                         alpha      = n
                         beta       = n + 1          
                         gamma      = n + 2
                         alphaNext  = n + 3
                         betaNext   = n + 4          
                         gammaNext  = n + 5
-                        precession += euclidean(readFile.values[m, alpha], readFile.values[m, alphaNext])
-                        nutation   += euclidean(readFile.values[m, beta],  readFile.values[m, betaNext])
-                        spin       += euclidean(readFile.values[m, gamma], readFile.values[m, gammaNext])
+                        try:    
+                            precession += euclidean(readFile.values[m, alpha], readFile.values[m, alphaNext])
+                            #print 'precession = ', precession
+                            nutation   += euclidean(readFile.values[m, beta],  readFile.values[m, betaNext])
+                            spin       += euclidean(readFile.values[m, gamma], readFile.values[m, gammaNext])
+                        except ValueError:
+                        #print '1st catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
+                            break
+                    
                     precessionVelocity = precession/time
+                    #print 'precessionVelocity = ', precessionVelocity
                     nutationVelocity   = nutation/time
                     spinVelocity       = spin/time
-                    
-                    for n in range(0, np.shape(readFile.values)[1] - 3, 3):
+                                                            
+                    for n in range(0, np.shape(readFile.values)[1] - 3, 3):                                                
                         alpha      = n
                         beta       = n + 1          
                         gamma      = n + 2
-                        readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
-                        readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
-                        readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                        try:
+                            readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
+                            readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
+                            readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                        except ValueError:
+                            #print '2nd catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
+                            continue
                     
-                    averageAlpha = np.sum(readFile.values[m, range(0, np.shape(readFile.values)[1], 3)]) / time
-                    averageBeta  = np.sum(readFile.values[m, range(1, np.shape(readFile.values)[1], 3)]) / time
-                    averageGamma = np.sum(readFile.values[m, range(2, np.shape(readFile.values)[1], 3)]) / time
+                    # Calculate the number of missing values in the array                    
+                    number_of_nan = len(readFile.values[m][pandas.isnull(readFile.values[m])])           
+                    length_of_array = len(readFile.values[m])
+                    valid_datapoints = length_of_array - number_of_nan
+                    
+                    averageAlpha = np.sum(readFile.values[m, range(0, valid_datapoints, 3)]) / time
+                    averageBeta  = np.sum(readFile.values[m, range(1, valid_datapoints, 3)]) / time
+                    averageGamma = np.sum(readFile.values[m, range(2, valid_datapoints, 3)]) / time
                     
                     velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
+                    print 'filename, m, velocityAlpha = ', csvfile[-6:], m, velocityAlpha
                     velocityBeta   = np.vstack((velocityBeta,  averageBeta))
                     velocityGamma  = np.vstack((velocityGamma, averageGamma))
                     
@@ -168,39 +189,58 @@ for i in range(len(os.listdir(sourcePath))):                                    
                 angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
                 angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
                 
-                AngVel_array = np.hstack((AngVel_array, angular_velocity))                                                       
+                AngVel_array = np.hstack((AngVel_array, angular_velocity))
+                #print 'AngVel_array = ', AngVel_array                                                       
             else:
+                print 'This is the Else phase'
                 for m in range(1, len(readFile.values)):                      # for every two files
                 ## need to add code to check if number_of_rows matches
                     precession, nutation, spin = 0, 0, 0
-                    
-                    for n in range(0, np.shape(readFile.values)[1] - 5, 3):
+                                                            
+                    for n in range(0, np.shape(readFile.values)[1] - 5, 3):                                                
                         alpha      = n
                         beta       = n + 1          
                         gamma      = n + 2
                         alphaNext  = n + 3
                         betaNext   = n + 4          
                         gammaNext  = n + 5
-                        precession += euclidean(readFile.values[m, alpha], readFile.values[m, alphaNext])
-                        nutation   += euclidean(readFile.values[m, beta],  readFile.values[m, betaNext])
-                        spin       += euclidean(readFile.values[m, gamma], readFile.values[m, gammaNext])
-                    precessionVelocity = precession/time
+                        try:                            
+                            precession += euclidean(readFile.values[m, alpha], readFile.values[m, alphaNext])
+                            nutation   += euclidean(readFile.values[m, beta],  readFile.values[m, betaNext])
+                            spin       += euclidean(readFile.values[m, gamma], readFile.values[m, gammaNext])
+                        except ValueError:
+                            #print '1st catch (copy = False) at print file, m, n = ', csvfile[-6:], m, n
+                            continue
+                    
+                    precessionVelocity = precession/time                                       
                     nutationVelocity   = nutation/time
                     spinVelocity       = spin/time
-                    
-                    for n in range(0, np.shape(readFile.values)[1] - 3, 3):
+                    #print 'precession,nutation,spinVelocity = ', precessionVelocity, nutationVelocity, spinVelocity
+                                                            
+                    for n in range(0, np.shape(readFile.values)[1] - 3, 3):                                                
                         alpha      = n
                         beta       = n + 1          
                         gamma      = n + 2
-                        readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
-                        readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
-                        readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                        try:
+                            readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
+                            readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
+                            readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                        except ValueError:
+                            #print '2nd catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
+                            continue
                     
-                    averageAlpha = np.sum(readFile.values[m, range(0, np.shape(readFile.values)[1], 3)]) / time
-                    averageBeta  = np.sum(readFile.values[m, range(1, np.shape(readFile.values)[1], 3)]) / time
-                    averageGamma = np.sum(readFile.values[m, range(2, np.shape(readFile.values)[1], 3)]) / time
+                    # Calculate the number of missing values in the array                    
+                    number_of_nan = len(readFile.values[m][pandas.isnull(readFile.values[m])])           
+                    length_of_array = len(readFile.values[m])
+                    valid_datapoints = length_of_array - number_of_nan
+                    
+                    averageAlpha = np.sum(readFile.values[m, range(0, valid_datapoints, 3)]) / time
+                    #print 'averageAlpha = ', averageAlpha
+                    averageBeta  = np.sum(readFile.values[m, range(1, valid_datapoints, 3)]) / time
+                    averageGamma = np.sum(readFile.values[m, range(2, valid_datapoints, 3)]) / time
                     
                     velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
+                    print 'filename, m, velocityAlpha = ', csvfile[-6:], m, velocityAlpha
                     velocityBeta   = np.vstack((velocityBeta,  averageBeta))
                     velocityGamma  = np.vstack((velocityGamma, averageGamma))
                     
@@ -214,7 +254,9 @@ for i in range(len(os.listdir(sourcePath))):                                    
                 angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
                 
                 AngVel_array = angular_velocity.copy()
+                #print 'AngVel_array = ', AngVel_array
                 copy = True
+
     # Create complete file structure/dataframe           
     if i == 0:
         fullFile4 = DataFrame(AngVel_array)            
