@@ -99,6 +99,14 @@ Created on Sat Aug 29 00:07:11 2015
 #==============================================================================
 #==============================================================================
          
+def CalculateValidData():
+    # Calculate the number of missing values in the array                    
+    number_of_nan = len(readFile.values[m][pandas.isnull(readFile.values[m])])           
+    length_of_array = len(readFile.values[m])
+    valid_datapoints = length_of_array - number_of_nan    
+    return valid_datapoints
+    
+    
 for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
     print 'i = ', i    
     gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
@@ -124,7 +132,7 @@ for i in range(len(os.listdir(sourcePath))):                                    
             velocityBeta  = np.asarray(velocityBeta)
             velocityGamma = np.asarray(velocityGamma)
             
-            time = np.shape(readFile.values)[1] / frequency_euc
+            #time = np.shape(readFile.values)[1] / frequency_euc
             
                        
             if copy == True:
@@ -149,6 +157,9 @@ for i in range(len(os.listdir(sourcePath))):                                    
                         #print '1st catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
                             break
                     
+                    valid_data = CalculateValidData() - 60                       # Exclude missing values (we exclude 6 more values to remain within a safer margin)                    
+                    time = valid_data / frequency_euc
+                    
                     precessionVelocity = precession/time
                     #print 'precessionVelocity = ', precessionVelocity
                     nutationVelocity   = nutation/time
@@ -166,17 +177,12 @@ for i in range(len(os.listdir(sourcePath))):                                    
                             #print '2nd catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
                             continue
                     
-                    # Calculate the number of missing values in the array                    
-                    number_of_nan = len(readFile.values[m][pandas.isnull(readFile.values[m])])           
-                    length_of_array = len(readFile.values[m])
-                    valid_datapoints = length_of_array - number_of_nan
-                    
-                    averageAlpha = np.sum(readFile.values[m, range(0, valid_datapoints, 3)]) / time
-                    averageBeta  = np.sum(readFile.values[m, range(1, valid_datapoints, 3)]) / time
-                    averageGamma = np.sum(readFile.values[m, range(2, valid_datapoints, 3)]) / time
+                    averageAlpha = np.sum(readFile.values[m, range(0, valid_data, 3)]) / time
+                    averageBeta  = np.sum(readFile.values[m, range(1, valid_data, 3)]) / time
+                    averageGamma = np.sum(readFile.values[m, range(2, valid_data, 3)]) / time
                     
                     velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
-                    print 'filename, m, velocityAlpha = ', csvfile[-6:], m, velocityAlpha
+                    #print 'filename, m, velocityAlpha = ', csvfile[-6:], m, velocityAlpha
                     velocityBeta   = np.vstack((velocityBeta,  averageBeta))
                     velocityGamma  = np.vstack((velocityGamma, averageGamma))
                     
@@ -212,6 +218,9 @@ for i in range(len(os.listdir(sourcePath))):                                    
                             #print '1st catch (copy = False) at print file, m, n = ', csvfile[-6:], m, n
                             continue
                     
+                    valid_data = CalculateValidData() - 60                    
+                    time = valid_data / frequency_euc
+
                     precessionVelocity = precession/time                                       
                     nutationVelocity   = nutation/time
                     spinVelocity       = spin/time
@@ -229,18 +238,13 @@ for i in range(len(os.listdir(sourcePath))):                                    
                             #print '2nd catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
                             continue
                     
-                    # Calculate the number of missing values in the array                    
-                    number_of_nan = len(readFile.values[m][pandas.isnull(readFile.values[m])])           
-                    length_of_array = len(readFile.values[m])
-                    valid_datapoints = length_of_array - number_of_nan
-                    
-                    averageAlpha = np.sum(readFile.values[m, range(0, valid_datapoints, 3)]) / time
+                    averageAlpha = np.sum(readFile.values[m, range(0, valid_data, 3)]) / time
                     #print 'averageAlpha = ', averageAlpha
-                    averageBeta  = np.sum(readFile.values[m, range(1, valid_datapoints, 3)]) / time
-                    averageGamma = np.sum(readFile.values[m, range(2, valid_datapoints, 3)]) / time
+                    averageBeta  = np.sum(readFile.values[m, range(1, valid_data, 3)]) / time
+                    averageGamma = np.sum(readFile.values[m, range(2, valid_data, 3)]) / time
                     
                     velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
-                    print 'filename, m, velocityAlpha = ', csvfile[-6:], m, velocityAlpha
+                    #print 'filename, m, velocityAlpha = ', csvfile[-6:], m, velocityAlpha
                     velocityBeta   = np.vstack((velocityBeta,  averageBeta))
                     velocityGamma  = np.vstack((velocityGamma, averageGamma))
                     
