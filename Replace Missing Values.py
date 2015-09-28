@@ -36,6 +36,9 @@ def ReplaceNaN(sourcePath, destinationPath):
                 Beta = csvfile.values[j,k]
                 if k > 1 and isnan(Beta) == True:
                     csvfile.values[j,k] = csvfile.values[j, k-3]
+                elif k == 1 and isnan(Beta) == True:
+                    
+                    
                 
         csvfile = DataFrame(csvfile)
         csvfile.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)

@@ -13,14 +13,14 @@ from pandas import DataFrame
 from scipy.spatial.distance import euclidean
 from itertools import combinations
 
-source_left = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left\\'                       # source folder
-source_right = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right\\'
-source_left_sorted = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left_sorted\\'         # source folder
-source_right_sorted = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right_sorted\\'
-filelist_left = os.listdir(source_left)
-filelist_left = natsorted(filelist_left)
-filelist_right = os.listdir(source_right)
-filelist_right = natsorted(filelist_right)                                      # naturally sort the file list
+#source_left = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Left\\'                       # source folder
+#source_right = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Right\\'
+source_left_sorted = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Left_sorted\\'         # source folder
+source_right_sorted = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Right_sorted\\'
+filelist_left_sorted = os.listdir(source_left_sorted)
+filelist_left_sorted = natsorted(filelist_left_sorted)
+filelist_right_sorted = os.listdir(source_right_sorted)
+filelist_right_sorted = natsorted(filelist_right_sorted)                                      # naturally sort the file list
 destination_left  =  'C:\\Users\\Shamir\\Desktop\\Features\\Left\\'             # gestures performed only with the left hand go here
 destination_right =  'C:\\Users\\Shamir\\Desktop\\Features\\Right\\'            # gestures performed only with the right hand go here
 fileformat = '.csv'
@@ -172,7 +172,7 @@ def Velocity(number_of_rows, number_of_columns, sourcePath, Dataset):
     return fullFile3
 
 
-# function for extracting Angular Velocity
+# function for extracting Angular Velocity (uses only one file - combined Euclidean)
 def AngularVelocity(number_of_rows, number_of_columns, sourcePath, Dataset):
     
     for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
@@ -200,7 +200,7 @@ def AngularVelocity(number_of_rows, number_of_columns, sourcePath, Dataset):
                 
                 time = number_of_columns / frequency_euc                        # np.shape(readFile.values)[1]
                 
-                if copy == True:
+                if copy == True:                                                # after the 1st iteration, simply start stacking the columns
                     for m in range(1, number_of_rows):                      # len(readFile.values)
                     ## need to add code to check if number_of_rows matches
                         precession, nutation, spin = 0, 0, 0
@@ -289,7 +289,7 @@ def AngularVelocity(number_of_rows, number_of_columns, sourcePath, Dataset):
                     angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
                     angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
                     
-                    AngVel_array = angular_velocity.copy()
+                    AngVel_array = angular_velocity.copy()                      # use this array as permanent storage
                     copy = True
         # Create complete file structure/dataframe           
         if i == 0:

@@ -12,10 +12,10 @@ from natsort import natsorted
 
 start = time.clock()
 
-source_left = 'C:\\Users\\Shamir\\Desktop\\Euclidean\\Left\\'                    # source folder
-source_right = 'C:\\Users\\Shamir\\Desktop\\Euclidean\\Right\\'                  # naturally sort the file list
-destination_left  =  'C:\\Users\\Shamir\\Desktop\\Euclidean_components\\Left\\'  # gestures performed only with the left hand go here
-destination_right =  'C:\\Users\\Shamir\\Desktop\\Euclidean_components\\Right\\' # gestures performed only with the right hand go here
+source_left = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Left\\'                    # source folder
+source_right = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Right\\'                  # naturally sort the file list
+destination_left  =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean_components\\P1\\Left\\'  # gestures performed only with the left hand go here
+destination_right =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean_components\\P1\\Right\\' # gestures performed only with the right hand go here
 fileformat = '.csv'
 
 

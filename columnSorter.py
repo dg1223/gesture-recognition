@@ -6,11 +6,12 @@ Created on Thu Jun 01 01:11:52 2015
 """
 
 import pandas
-import numpy as np
 import os
 
-gesture_path = 'C:\\Users\\Shamir\\Desktop\\Grad\\Gesture Stuff\\Data_Multisensor\\'    # use input() to make it interactive
-destination =  'C:\\Users\\Shamir\\Desktop\\broken down files\\'
+#gesture_path = 'C:\\Users\\Shamir\\Desktop\\Grad\\Gesture Stuff\\Data_Multisensor\\'    # use input() to make it interactive
+gesture_path = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\test\\'
+#destination =  'C:\\Users\\Shamir\\Desktop\\broken down files\\'
+destination = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\test\\'
 fileformat = '.csv'
 backslash = '\\'
 

@@ -11,14 +11,14 @@ import numpy as np
 import time
 from natsort import natsorted
 from pandas import DataFrame
-from math import isnan
+#from math import isnan
 
 start = time.clock()                                                            # start counting time (optional)
 
-source_left       = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left_combined\\'  # source folder
-source_right      = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right_combined\\' # naturally sort the file list
-destination_left  = 'C:\\Users\\Shamir\\Desktop\\Euclidean\\Left\\'              # gestures performed only with the left hand go here
-destination_right = 'C:\\Users\\Shamir\\Desktop\\Euclidean\\Right\\'             # gestures performed only with the right hand go here
+source_left       = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Left_combined\\'  # source folder
+source_right      = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Right_combined\\' # naturally sort the file list
+destination_left  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Left\\'                
+destination_right = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Right\\'               
 fileformat        = '.csv'
 
 def Convert2Euclidean(sourcePath, destinationPath):
@@ -31,11 +31,13 @@ def Convert2Euclidean(sourcePath, destinationPath):
     
     """
 
+    count_errors = 0
     count       = 1                                                             # start count for file numbers
     output_list = []                                                            # temporary storage list before passing data to an array
     filelist    = os.listdir(sourcePath)                                        # list all the files in the folder
     filelist    = natsorted(filelist)                                           # naturally sort the file list; this fixes the problem of having improper file order in the list
-    for file in range(1,2):       # len(filelist)
+    
+    for file in range(len(filelist)):       # len(filelist)
         
         #print "reading file # ", file       
         csvfile            = pandas.read_csv(sourcePath + filelist[file], header = None)    # read csv file
@@ -68,15 +70,18 @@ def Convert2Euclidean(sourcePath, destinationPath):
                 qy = csvfile.values[i, thirdIndex]
                 qz = csvfile.values[i, fourthIndex]
                 
+                                
                 # Calculate the Euler Angles in degrees (multiplying the radian terms with 180/pi)
                 #print "reading i, j = ", i, j
                 Alpha = np.arctan ((2*(qr*qx + qy*qz)) / (1 - 2*(np.square(qx) + np.square(qy)))) * 180/np.pi    
                 
                 ## Major bug, possibly due to noise. This test value, given that the condition becomes true, should not be used for actual analysis. Instead, please filter the noise through the modified filter.
                 test = 2*(qr*qy - qx*qz)                
-                #if test < -1.0:
+                if test < -1.0:
+                    count_errors += 1
                     #test = -1.0
-                #elif test > 1.0:
+                elif test > 1.0:
+                    count_errors += 1
                     #test = 1.0
                     
                 Beta  = np.arcsin (test)                                                          * 180/np.pi
@@ -95,6 +100,9 @@ def Convert2Euclidean(sourcePath, destinationPath):
                 output_list.append(Alpha)
                 output_list.append(Beta)
                 output_list.append(Gamma)
+                
+                #except ValueError:                 # if we encounter NaN values
+                 #   pass
             
             #print "shape of 2nd output_list = ", np.shape(output_list)
             output_array = np.vstack((output_array, output_list))               # insert each converted row into the storage array
@@ -103,7 +111,8 @@ def Convert2Euclidean(sourcePath, destinationPath):
         output_array = DataFrame(output_array)                                  # convert complete array into a Pandas Dataframe 
         #output_array.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)   # write the dataframe to a csv file
         count += 1                                                              # increment file counter
-            
+    print 'bad Beta values = ', count_errors    
+
 Convert2Euclidean(source_left, destination_left)
 Convert2Euclidean(source_right, destination_right)
 

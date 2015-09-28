@@ -14,10 +14,10 @@ from pandas import DataFrame
 
 start = time.clock()
 
-source_left = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left\\'                # source folder
-source_right = 'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right\\'              # naturally sort the file list
-destination_left  =  'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Left_sorted\\'  # gestures performed only with the left hand go here
-destination_right =  'C:\\Users\\Shamir\\Desktop\\Hands_Sorted\\Right_sorted\\' # gestures performed only with the right hand go here
+source_left = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Left\\'                   # source folder
+source_right = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Right\\'                 # naturally sort the file list
+destination_left  =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Left_combined\\'   # qr, qx, qy, qz combined
+destination_right =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Right_combined\\' 
 fileformat = '.csv'    
 
 
@@ -53,7 +53,7 @@ def Join(sourcePath, destinationPath):
         output_array = DataFrame(output_array)        
         output_array.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)
         count += 1
-        print "i = ", i, " done"
+        #print "i = ", i, " done"
         
 Join(source_left, destination_left)
 Join(source_right, destination_right)
