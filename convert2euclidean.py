@@ -11,14 +11,13 @@ import numpy as np
 import time
 from natsort import natsorted
 from pandas import DataFrame
-#from math import isnan
 
 start = time.clock()                                                            # start counting time (optional)
 
-source_left       = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Left_combined\\'  # source folder
-source_right      = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Right_combined\\' # naturally sort the file list
-destination_left  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Left\\'                
-destination_right = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Right\\'               
+source_left       = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Left_combined\\'  # source folder
+source_right      = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Right_combined\\' # naturally sort the file list
+destination_left  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Left Sorted\\'                
+destination_right = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Right Sorted\\'               
 fileformat        = '.csv'
 
 def Convert2Euclidean(sourcePath, destinationPath):
@@ -65,16 +64,19 @@ def Convert2Euclidean(sourcePath, destinationPath):
                 thirdIndex  = j + 2
                 fourthIndex = j + 3
                 
-                qr = csvfile.values[i, j]
-                qx = csvfile.values[i, secondIndex]
-                qy = csvfile.values[i, thirdIndex]
-                qz = csvfile.values[i, fourthIndex]
+                qr = float(csvfile.values[i, j])
+                qx = float(csvfile.values[i, secondIndex])
+                qy = float(csvfile.values[i, thirdIndex])
+                qz = float(csvfile.values[i, fourthIndex])
                 
                                 
                 # Calculate the Euler Angles in degrees (multiplying the radian terms with 180/pi)
                 #print "reading i, j = ", i, j
-                Alpha = np.arctan ((2*(qr*qx + qy*qz)) / (1 - 2*(np.square(qx) + np.square(qy)))) * 180/np.pi    
-                
+                try:
+                    Alpha = np.arctan ((2*(qr*qx + qy*qz)) / (1 - 2*(np.square(qx) + np.square(qy)))) * 180/np.pi    
+                except:
+                    print 'file, row, col = ', file, i, j
+                    print qr, qx, qy, qz
                 ## Major bug, possibly due to noise. This test value, given that the condition becomes true, should not be used for actual analysis. Instead, please filter the noise through the modified filter.
                 test = 2*(qr*qy - qx*qz)                
                 if test < -1.0:
@@ -109,7 +111,7 @@ def Convert2Euclidean(sourcePath, destinationPath):
             output_list  = []                                                   # empty temporary list for next iteration
         
         output_array = DataFrame(output_array)                                  # convert complete array into a Pandas Dataframe 
-        #output_array.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)   # write the dataframe to a csv file
+        output_array.to_csv(destinationPath + str(count) + fileformat, header = False, index = False)   # write the dataframe to a csv file
         count += 1                                                              # increment file counter
     print 'bad Beta values = ', count_errors    
 
