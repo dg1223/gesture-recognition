@@ -18,11 +18,11 @@ def copyHeaders(source):
     dest_array = np.asarray(dest_list)
     return dest_array
 
-source = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Broken down files\\P1\\'                       # source folder
+source = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Broken down files\\P8\\'                       # source folder
 filelist = os.listdir(source)
 filelist = natsorted(filelist)                                                                           # naturally sort the file list
-destination_left  =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Left\\'         # gestures performed only with the left hand go here
-destination_right =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Right\\'        # gestures performed only with the right hand go here
+destination_left  =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Left\\'         # gestures performed only with the left hand go here
+destination_right =  'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Right\\'        # gestures performed only with the right hand go here
 fileformat = '.csv'
 count = 1
 

@@ -8,13 +8,13 @@ Created on Tue Sep 22 19:52:59 2015
 import pandas
 import os
 
-gesture_path = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\CSV Files\\P1\\'
-destination = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Broken down files\\P1\\'
+gesture_path = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\CSV Files\\P6\\'
+destination = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Broken down files\\P6\\'
 fileformat = '.csv'
 backslash = '\\'
 
 count = 1
-for i in range(len(os.listdir(gesture_path))):                                          # we have 6 files corresponding to 6 gestures
+for i in range(len(os.listdir(gesture_path))):                                          # we have 6 files corresponding to 6 gestures len(os.listdir(gesture_path))
     gesture = os.listdir(gesture_path)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard 
             
     for k in range(len(os.listdir(gesture_path + gesture))):    
