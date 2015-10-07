@@ -7,9 +7,9 @@ Created on Tue Oct 06 20:58:30 2015
 
 import pandas
 import os
-from itertools import repeat
+import numpy as np
 
-sourcePath = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\CSV Files\\P8\\'
+sourcePath = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\CSV Files\\P6\\'
 fileformat = '.csv'
 backslash = '\\'
 header = np.array(['qr','qx','qy','qz','time'])
