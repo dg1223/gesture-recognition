@@ -7,11 +7,11 @@ Created on Mon Oct 05 20:04:03 2015
 
 import pandas
 import os
-from StringIO import StringIO
 
 sourcePath = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\CSV Files\\P8\\'
 fileformat = '.csv'
 backslash = '\\'
+
 for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures 
     gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard 
     print gesture
