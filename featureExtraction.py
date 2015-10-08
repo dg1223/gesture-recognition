@@ -8,16 +8,19 @@ Created on Thu Jun 04 21:18:52 2015
 import pandas
 import os
 import numpy as np
+import time
 from natsort import natsorted
 from pandas import DataFrame
 from scipy.spatial.distance import euclidean
 from itertools import combinations
 
-source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Left\\'                       # source folder
-source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P1\\Right\\'
-source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Left_sorted\\'         # source folder
-source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P1\\Right_sorted\\'                                      # naturally sort the file list
-destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P1\\'
+start = time.clock()
+
+source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P2\\Left\\'                       # source folder
+source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P2\\Right\\'
+source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P2\\Left Sorted\\'         # source folder
+source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P2\\Right Sorted\\'                                      # naturally sort the file list
+destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P2\\original\\'
 left                = 'LeftHandFeatures'
 right               = 'RightHandFeatures'
 fileformat          = '.csv'
@@ -54,7 +57,7 @@ def Variance(sourcePath):
                 
                 number_of_rows = len(readFile.values)
                 variance = ['Var_' + sensor[6:] + '_' + readFile.values[0,0]]
-                print variance, csvfile[-7:]
+                #print variance, csvfile[-7:]
                 variance = np.asarray(variance)
                 
                 if copy == True:
@@ -63,6 +66,7 @@ def Variance(sourcePath):
                         valid_data = CalculateValidData(readFile, m)                # exclude missing values                          
                         Var = np.var(readFile.values[m, 0:valid_data])
                         variance = np.vstack((variance, Var))
+                    #print 'lengths = ', np.shape(variance_array), np.shape(variance)
                     variance_array = np.hstack((variance_array, variance))                            
                 else:
                     for m in range(1, number_of_rows):
@@ -102,7 +106,7 @@ def Range(sourcePath):
                 
                 number_of_rows    = len(readFile.values)          
                 range_header = ['Range_' + sensor[6:] + '_' + readFile.values[0,0]]
-                print range_header, csvfile[-7:]
+                #print range_header, csvfile[-7:]
                 range_header = np.asarray(range_header)
                 
                 if copy == True:
@@ -151,7 +155,7 @@ def Velocity(sourcePath):
                 number_of_rows    = len(readFile.values)
                 number_of_columns = np.shape(readFile.values)[1]
                 velocity = ['Vel_' + sensor[6:] + '_' + readFile.values[0,0]]
-                print velocity, csvfile[-7:]
+                #print velocity, csvfile[-7:]
                 velocity = np.asarray(velocity)
                 distance = 0
                 
@@ -207,7 +211,7 @@ def Velocity(sourcePath):
 def AngularVelocity(sourcePath):
     
     for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
-        print 'i = ', i    
+        #print 'i = ', i    
         gesture = os.listdir(sourcePath)[i]                                               # Jab, Uppercut, Throw, Jets, Block, Asgard
         copy = False            
         AngVel_array = []
@@ -215,7 +219,7 @@ def AngularVelocity(sourcePath):
         for k in range(len(os.listdir(sourcePath + gesture))):
             sensor = os.listdir(sourcePath + gesture)[k]            # Sensor15, Sensor16, Sensor17, Sensor18, Sensor19 
             sensorFolder = os.listdir(sourcePath + gesture + backslash + sensor)
-            print sensorFolder
+            #print sensorFolder
             
             for l in range(len(sensorFolder)):
                 csvfile = sourcePath + gesture + backslash + sensor + backslash + sensorFolder[l]   # full filepath
@@ -227,6 +231,7 @@ def AngularVelocity(sourcePath):
                 velocityAlpha = ['Precession_' + sensor[6:]]
                 velocityBeta  = ['Nutation_'   + sensor[6:]]
                 velocityGamma = ['Spin_'       + sensor[6:]]
+                #print 'Angular velocity ', csvfile[-7:]
                 
                 velocityAlpha = np.asarray(velocityAlpha)
                 velocityBeta  = np.asarray(velocityBeta)
@@ -234,7 +239,7 @@ def AngularVelocity(sourcePath):
                 
                            
                 if copy == True:
-                    print 'This is the If phase'
+                    #print 'This is the If phase'
                     for m in range(1, number_of_rows):                      # for every two files ???
                     ## need to add code to check if number_of_rows matches
                         precession, nutation, spin = 0, 0, 0
@@ -293,7 +298,7 @@ def AngularVelocity(sourcePath):
                     AngVel_array = np.hstack((AngVel_array, angular_velocity))
                                                       
                 else:
-                    print 'This is the Else phase'
+                    #print 'This is the Else phase'
                     for m in range(1, number_of_rows):                      
                     ## need to add code to check if number_of_rows matches
                         precession, nutation, spin = 0, 0, 0
@@ -391,7 +396,7 @@ def Covariance(sourcePath):
                 
                 number_of_rows = len(readFile1.values)            
                 covariance = ['Cov_' + sensorFolder1[6:] + '_' + sensorFolder2[6:] + '_' + readFile1.values[0,0]]
-                print covariance, csvfile1[-7:], csvfile2[-7:]
+                #print covariance, csvfile1[-7:], csvfile2[-7:]
                 covariance = np.asarray(covariance)
                 
                 if copy == True:
@@ -439,20 +444,34 @@ def Covariance(sourcePath):
 def extractFeatures():
     
     # Left Hand Gestures
+    print 'Calculating LH Features'
+    
+    print 'Calculating variance'
     variance_l = Variance(source_left)
+    print 'Calculating range'
     range_l    = Range(source_left)
+    print 'Calculating velocity'
     velocity_l = Velocity(source_left)
+    print 'Calculating angular velocity'
     AngVel_l   = AngularVelocity(source_left_Euclid)
+    print 'Calculating covariance'
     covar_l    = Covariance(source_left)
     
     fullFile_l = pandas.concat([variance_l, range_l, velocity_l, AngVel_l, covar_l], axis = 1)
     fullFile_l.to_csv(destination + left + fileformat, header = False, index = False)
     
     # Right Hand Gestures
+    print 'Calculating RH Features'
+    
+    print 'Calculating variance'
     variance_r = Variance(source_right)
+    print 'Calculating range'
     range_r    = Range(source_right)
+    print 'Calculating velocity'
     velocity_r = Velocity(source_right)
+    print 'Calculating angular velocity'
     AngVel_r   = AngularVelocity(source_right_Euclid)
+    print 'Calculating covariance'
     covar_r    = Covariance(source_right)
     
     fullFile_r = pandas.concat([variance_r, range_r, velocity_r, AngVel_r, covar_r], axis = 1)
@@ -460,5 +479,5 @@ def extractFeatures():
     
 extractFeatures()
     
-    
+print time.clock() - start, 'seconds taken to execute the program'     
     
