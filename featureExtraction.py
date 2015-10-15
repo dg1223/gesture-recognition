@@ -16,11 +16,11 @@ from itertools import combinations
 
 start = time.clock()
 
-source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P2\\Left\\'                       # source folder
-source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P2\\Right\\'
-source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P2\\Left Sorted\\'         # source folder
-source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P2\\Right Sorted\\'                                      # naturally sort the file list
-destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P2\\original\\'
+source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Left\\'                       # source folder
+source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Right\\'
+source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Left Sorted\\'         # source folder
+source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Right Sorted\\'                                      # naturally sort the file list
+destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P8\\original\\'
 left                = 'LeftHandFeatures'
 right               = 'RightHandFeatures'
 fileformat          = '.csv'
@@ -46,8 +46,8 @@ def Variance(sourcePath):
         variance_array = []
             
         for k in range(len(os.listdir(sourcePath + gesture))):
-            sensor = os.listdir(sourcePath + gesture)[k]                              # Sensor15, Sensor16, Sensor17, Sensor18, Sensor19 
-            sensorFolder = os.listdir(sourcePath + gesture + backslash + sensor)      # 1.csv ... 4.csv 
+            sensor = os.listdir(sourcePath + gesture)[k]                              # Sensor15, Sensor16, Sensor17, Sensor18, Sensor19
+            sensorFolder = os.listdir(sourcePath + gesture + backslash + sensor)      # 1.csv ... 4.csv
             sensorFolder = natsorted(sensorFolder)
             
             for l in range(len(sensorFolder)):
@@ -57,19 +57,47 @@ def Variance(sourcePath):
                 
                 number_of_rows = len(readFile.values)
                 variance = ['Var_' + sensor[6:] + '_' + readFile.values[0,0]]
-                #print variance, csvfile[-7:]
+                print variance, csvfile[-7:]
                 variance = np.asarray(variance)
                 
                 if copy == True:
                     for m in range(1, number_of_rows):                          #  |||len(readFile.values)|||
+                    
+                        # exit current loop if the row is filled with NaN (after stacking columns)                
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            Var = 'nan'
+                            variance = np.vstack((variance, Var))
+                            continue
+                            
                     ## need to add code to check if number_of_rows matches
-                        valid_data = CalculateValidData(readFile, m)                # exclude missing values                          
+                        valid_data = CalculateValidData(readFile, m)                # exclude missing values 
                         Var = np.var(readFile.values[m, 0:valid_data])
                         variance = np.vstack((variance, Var))
                     #print 'lengths = ', np.shape(variance_array), np.shape(variance)
-                    variance_array = np.hstack((variance_array, variance))                            
+                    #print len(variance_array), len(variance)
+                    #print 'valid = ', valid_data
+                    
+                    # if there is a mismatch in row numbers between files, add 'nan' to make up for the extra row (we only have one sample mismatch)
+                    try:
+                        variance_array = np.hstack((variance_array, variance))
+                    except ValueError:
+                        if len(variance_array) < len(variance):
+                            variance_array = np.hstack((variance_array, variance[1:]))
+                        elif len(variance_array) > len(variance):
+                            variance = variance.tolist()
+                            variance.append(['nan'])
+                            variance = np.asarray(variance)
+                            #print 'lengths = ', np.shape(variance_array), np.shape(variance)
+                            variance_array = np.hstack((variance_array, variance))
                 else:
                     for m in range(1, number_of_rows):
+                        
+                        # exit current loop if the row is filled with NaN (after stacking columns)  
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            Var = 'nan'
+                            variance = np.vstack((variance, Var))
+                            continue
+                        
                         valid_data = CalculateValidData(readFile, m)
                         Var = np.var(readFile.values[m, 0:valid_data])
                         variance = np.vstack((variance, Var))
@@ -106,18 +134,44 @@ def Range(sourcePath):
                 
                 number_of_rows    = len(readFile.values)          
                 range_header = ['Range_' + sensor[6:] + '_' + readFile.values[0,0]]
-                #print range_header, csvfile[-7:]
+                print range_header, csvfile[-7:]
                 range_header = np.asarray(range_header)
                 
                 if copy == True:
                     for m in range(1, number_of_rows):                          # for every two files
+                    
+                        # exit current loop if the row is filled with NaN (after stacking columns)
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            Range = 'nan'
+                            range_header = np.vstack((range_header, Range))
+                            continue
+                                                        
                     ## need to add code to check if number_of_rows matches                            
                         valid_data = CalculateValidData(readFile, m)
                         Range = np.ptp(readFile.values[m, 0:valid_data])
                         range_header = np.vstack((range_header, Range))
-                    range_array = np.hstack((range_array, range_header))                            
+                        
+                    # if there is a mismatch in row numbers between files, add 'nan' to make up for the extra row (we only have one sample mismatch)
+                    try:
+                        range_array = np.hstack((range_array, range_header))
+                    except ValueError:
+                        if len(range_array) < len(range_header):
+                            range_array = np.hstack((range_array, range_header[1:]))
+                        elif len(range_array) > len(range_header):
+                            range_header = range_header.tolist()
+                            range_header.append(['nan'])
+                            range_header = np.asarray(range_header)
+                            range_array = np.hstack((range_array, range_header))
+                           
                 else:
                     for m in range(1, number_of_rows):
+                        
+                        # exit current loop if the row is filled with NaN (after stacking columns) 
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            Range = 'nan'
+                            range_header = np.vstack((range_header, Range))
+                            continue
+                        
                         valid_data = CalculateValidData(readFile, m)
                         Range = np.ptp(readFile.values[m, 0:valid_data])
                         range_header = np.vstack((range_header, Range))
@@ -155,15 +209,23 @@ def Velocity(sourcePath):
                 number_of_rows    = len(readFile.values)
                 number_of_columns = np.shape(readFile.values)[1]
                 velocity = ['Vel_' + sensor[6:] + '_' + readFile.values[0,0]]
-                #print velocity, csvfile[-7:]
+                print velocity, csvfile[-7:]
                 velocity = np.asarray(velocity)
                 distance = 0
                 
                 if copy == True:
                     #print 'This is the If phase'
                     for m in range(1, number_of_rows):                      # for every two files
+                        
+                        # exit current loop if the row is filled with NaN (after stacking columns)
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            vel = 'nan'
+                            velocity = np.vstack((velocity, vel))
+                            continue
+                            
+                            
                         for n in range(number_of_columns - 1):
-                    ## need to add code to check if number_of_rows matches 
+                            ## need to add code to check if number_of_rows matches 
                             next_index = n + 1
                             try:
                                 distance += euclidean(readFile.values[m, n], readFile.values[m, next_index])
@@ -175,12 +237,29 @@ def Velocity(sourcePath):
                         time = valid_data / frequency_quat
                         
                         vel = distance/time
-                        velocity = np.vstack((velocity, vel)) 
-                    velocity_array = np.hstack((velocity_array, velocity))
+                        velocity = np.vstack((velocity, vel))
+                    
+                    try:
+                        velocity_array = np.hstack((velocity_array, velocity))
+                    except ValueError:
+                        if len(velocity_array) < len(velocity):
+                            velocity_array = np.hstack((velocity_array, velocity[1:]))
+                        elif len(velocity_array) > len(velocity):
+                            velocity = velocity.tolist()
+                            velocity.append(['nan'])
+                            velocity = np.asarray(velocity)
+                            velocity_array = np.hstack((velocity_array, velocity))
                                              
                 else:
                     #print 'This is the Else phase'
                     for m in range(1, number_of_rows):
+                        
+                        # exit current loop if the row is filled with NaN (after stacking columns)
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            vel = 'nan'
+                            velocity = np.vstack((velocity, vel))
+                            continue
+                            
                         for n in range(number_of_columns - 1):
                             next_index = n + 1
                             try:
@@ -223,7 +302,7 @@ def AngularVelocity(sourcePath):
             
             for l in range(len(sensorFolder)):
                 csvfile = sourcePath + gesture + backslash + sensor + backslash + sensorFolder[l]   # full filepath
-                readFile = pandas.read_csv(csvfile, header = None)
+                readFile = pandas.read_csv(csvfile, header = None)                
                 readFile.values[1:] = readFile.values[1:].astype(float)
                 
                 number_of_rows    = len(readFile.values)
@@ -231,7 +310,7 @@ def AngularVelocity(sourcePath):
                 velocityAlpha = ['Precession_' + sensor[6:]]
                 velocityBeta  = ['Nutation_'   + sensor[6:]]
                 velocityGamma = ['Spin_'       + sensor[6:]]
-                #print 'Angular velocity ', csvfile[-7:]
+                print 'Angular velocity ', csvfile[-7:]
                 
                 velocityAlpha = np.asarray(velocityAlpha)
                 velocityBeta  = np.asarray(velocityBeta)
@@ -240,7 +319,20 @@ def AngularVelocity(sourcePath):
                            
                 if copy == True:
                     #print 'This is the If phase'
-                    for m in range(1, number_of_rows):                      # for every two files ???
+                    for m in range(1, number_of_rows):
+                        
+                        # exit current loop if the row is filled with NaN                
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            #print 'if'
+                            averageAlpha = 'nan'
+                            averageBeta  = 'nan'
+                            averageGamma = 'nan'
+                            
+                            velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
+                            velocityBeta   = np.vstack((velocityBeta,  averageBeta))
+                            velocityGamma  = np.vstack((velocityGamma, averageGamma))
+                            continue
+                    
                     ## need to add code to check if number_of_rows matches
                         precession, nutation, spin = 0, 0, 0
                                             
@@ -294,12 +386,48 @@ def AngularVelocity(sourcePath):
                     angular_velocity[:,0] = velocityAlpha.reshape(1, columnSize)                          
                     angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
                     angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
+                    #print AngVel_array[0]
+                    #print 'lengths = ', np.shape(AngVel_array), np.shape(angular_velocity)
                     
-                    AngVel_array = np.hstack((AngVel_array, angular_velocity))
+                    # bypass dimension error -_-
+                    try:
+                        AngVel_array = np.hstack((AngVel_array, angular_velocity))
+                    except ValueError:
+                        try:
+                            AngVel_array = np.hstack((AngVel_array[1:], angular_velocity))
+                        except ValueError:
+                            angular_velocity = np.delete(angular_velocity, -1, axis = 0)
+                            #print 'lengths = ', np.shape(AngVel_array), np.shape(angular_velocity)
+                            AngVel_array = np.hstack((AngVel_array, angular_velocity))
                                                       
                 else:
                     #print 'This is the Else phase'
-                    for m in range(1, number_of_rows):                      
+                    for m in range(1, number_of_rows):
+                        
+                        # exit current loop if the row is filled with NaN                
+                        if all(pandas.isnull(readFile.values[m])) == True:
+                            #print 'else'
+                            averageAlpha = 'nan'
+                            averageBeta  = 'nan'
+                            averageGamma = 'nan'
+                            
+                            velocityAlpha  = np.vstack((velocityAlpha, averageAlpha))
+                            velocityBeta   = np.vstack((velocityBeta,  averageBeta))
+                            velocityGamma  = np.vstack((velocityGamma, averageGamma))
+                            
+                            columnSize = len(velocityAlpha)    
+                            angular_velocity = np.zeros((len(velocityAlpha), 3))
+                            angular_velocity = angular_velocity.astype(str)
+                            
+                            # Return the column vectors in a single 2D array
+                            angular_velocity[:,0] = velocityAlpha.reshape(1, columnSize)
+                            angular_velocity[:,1] = velocityBeta.reshape (1, columnSize)
+                            angular_velocity[:,2] = velocityGamma.reshape(1, columnSize)
+                            
+                            AngVel_array = angular_velocity.copy()
+                            copy = True
+                            
+                            continue
                     ## need to add code to check if number_of_rows matches
                         precession, nutation, spin = 0, 0, 0
                                                                 
@@ -345,6 +473,7 @@ def AngularVelocity(sourcePath):
                         velocityBeta   = np.vstack((velocityBeta,  averageBeta))
                         velocityGamma  = np.vstack((velocityGamma, averageGamma))
                         
+                    # This section can actually be inside the 1st for loop (because this phase only iterates once) ??
                     columnSize = len(velocityAlpha)    
                     angular_velocity = np.zeros((len(velocityAlpha), 3))
                     angular_velocity = angular_velocity.astype(str)
@@ -396,11 +525,24 @@ def Covariance(sourcePath):
                 
                 number_of_rows = len(readFile1.values)            
                 covariance = ['Cov_' + sensorFolder1[6:] + '_' + sensorFolder2[6:] + '_' + readFile1.values[0,0]]
-                #print covariance, csvfile1[-7:], csvfile2[-7:]
+                print covariance, csvfile1[-7:], csvfile2[-7:]
                 covariance = np.asarray(covariance)
                 
                 if copy == True:
                     for m in range(1, number_of_rows):                          # for every two files; len(readFile1.values)
+                        
+                        #print 'row = ', m
+                        # exit current loop if the row is filled with NaN (after stacking columns)
+                        try:
+                            if all(pandas.isnull(readFile1.values[m])) == True or all(pandas.isnull(readFile2.values[m])) == True:
+                                #print 'isnull if'
+                                cov = 'nan'
+                                covariance = np.vstack((covariance, cov))
+                                continue
+                        except IndexError:
+                            #print 'Length mismatch between ', csvfile1[-7:], csvfile2[-7:]
+                            continue
+                            
                     ## need to add code to check if number_of_rows matches
                         valid_data1 = CalculateValidData(readFile1, m)                  # exclude missing values                            
                         valid_data2 = CalculateValidData(readFile2, m)
@@ -413,10 +555,32 @@ def Covariance(sourcePath):
                             cov = np.cov(readFile1.values[m, 0:valid_data1], readFile2.values[m, 0:valid_data1], bias = 1)[0,1]
                             covariance = np.vstack((covariance, cov))
                             
-                    covariance_array = np.hstack((covariance_array, covariance))                            
+                    try:
+                        covariance_array = np.hstack((covariance_array, covariance))
+                    except ValueError:
+                        if len(covariance_array) < len(covariance):
+                            covariance_array = np.hstack((covariance_array, covariance[1:]))
+                        elif len(covariance_array) > len(covariance):
+                            covariance = covariance.tolist()
+                            covariance.append(['nan'])
+                            covariance = np.asarray(covariance)
+                            #print 'lengths = ', np.shape(covariance_array), np.shape(covariance)
+                            covariance_array = np.hstack((covariance_array, covariance))
                 
                 else:
                     for m in range(1, number_of_rows):
+                        
+                        try:
+                            # exit current loop if the row is filled with NaN (after stacking columns)
+                            if all(pandas.isnull(readFile1.values[m])) == True or all(pandas.isnull(readFile2.values[m])) == True:
+                                #print 'isnull else'
+                                cov = 'nan'
+                                covariance = np.vstack((covariance, cov))
+                                continue
+                        except IndexError:
+                            #print 'Length mismatch between ', csvfile1[-7:], csvfile2[-7:]
+                            continue
+                                
                         valid_data1 = CalculateValidData(readFile1, m)
                         valid_data2 = CalculateValidData(readFile2, m)
                         
@@ -442,40 +606,70 @@ def Covariance(sourcePath):
 
 
 def extractFeatures():
-    
+
+#==============================================================================
+# source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P3\\Left\\'                       # source folder
+# source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P3\\Right\\'
+# source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P3\\Left Sorted\\'         # source folder
+# source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P3\\Right Sorted\\'                                      # naturally sort the file list
+# destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P3\\original\\'
+#==============================================================================
+
     # Left Hand Gestures
     print 'Calculating LH Features'
     
     print 'Calculating variance'
     variance_l = Variance(source_left)
+    
     print 'Calculating range'
     range_l    = Range(source_left)
+    
     print 'Calculating velocity'
     velocity_l = Velocity(source_left)
+    
     print 'Calculating angular velocity'
     AngVel_l   = AngularVelocity(source_left_Euclid)
+    
     print 'Calculating covariance'
     covar_l    = Covariance(source_left)
     
     fullFile_l = pandas.concat([variance_l, range_l, velocity_l, AngVel_l, covar_l], axis = 1)
     fullFile_l.to_csv(destination + left + fileformat, header = False, index = False)
+
+
     
     # Right Hand Gestures
     print 'Calculating RH Features'
     
     print 'Calculating variance'
     variance_r = Variance(source_right)
+    name = '1.variance'
+    variance_r.to_csv(destination + name + fileformat, header = False, index = False)
+    
     print 'Calculating range'
     range_r    = Range(source_right)
+    name = '2.range'
+    range_r.to_csv(destination + name + fileformat, header = False, index = False)
+    
     print 'Calculating velocity'
     velocity_r = Velocity(source_right)
+    name = '3.velocity'
+    velocity_r.to_csv(destination + name + fileformat, header = False, index = False)
+    
     print 'Calculating angular velocity'
     AngVel_r   = AngularVelocity(source_right_Euclid)
+    name = '4.AngVel_r'
+    AngVel_r.to_csv(destination + name + fileformat, header = False, index = False)
+    
     print 'Calculating covariance'
     covar_r    = Covariance(source_right)
+    name = '5.covariance'
+    covar_r.to_csv(destination + name + fileformat, header = False, index = False)
     
-    fullFile_r = pandas.concat([variance_r, range_r, velocity_r, AngVel_r, covar_r], axis = 1)
-    fullFile_r.to_csv(destination + right + fileformat, header = False, index = False)
+    #print 'lengths = ', np.shape(variance_r), np.shape(range_r), np.shape(velocity_r), np.shape(AngVel_r), np.shape(covar_r)
+    
+    #fullFile_r = pandas.concat([variance_r, range_r, velocity_r, AngVel_r, covar_r], axis = 1)
+    #fullFile_r.to_csv(destination + right + fileformat, header = False, index = False)
     
 extractFeatures()
     
