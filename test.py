@@ -100,17 +100,21 @@ try:
                         
                         
                         
-# Left Hand Gestures
+    # Left Hand Gestures
     print 'Calculating LH Features'
     
     print 'Calculating variance'
     variance_l = Variance(source_left)
+    
     print 'Calculating range'
     range_l    = Range(source_left)
+    
     print 'Calculating velocity'
     velocity_l = Velocity(source_left)
+    
     print 'Calculating angular velocity'
     AngVel_l   = AngularVelocity(source_left_Euclid)
+    
     print 'Calculating covariance'
     covar_l    = Covariance(source_left)
     
