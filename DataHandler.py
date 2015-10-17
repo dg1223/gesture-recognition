@@ -2,6 +2,10 @@
 """
 Created on Fri Jun 05 23:33:24 2015
 
+*** This is incomplete and full of only copy-pasted defnitions. I tried to use OOP approach for my thesis but could not get enough time to do the extra work. Moreover, having the opportunity to use scripts
+and lack of requirement for an OOP style coding for an individual project are not good motivators for this style of coding. However, I still intend on completing this
+before I finish my Master's. Fingers crossed! ***
+
 @author: Shamir
 """
 
