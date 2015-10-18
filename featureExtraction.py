@@ -16,10 +16,10 @@ from itertools import combinations
 
 start = time.clock()
 
-source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Left\\'                       # source folder
+source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Left\\'             # source folder
 source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Right\\'
 source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Left Sorted\\'         # source folder
-source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Right Sorted\\'                                      # naturally sort the file list
+source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Right Sorted\\'        # naturally sort the file list
 destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P8\\original\\'
 left                = 'LeftHandFeatures'
 right               = 'RightHandFeatures'
@@ -73,9 +73,7 @@ def Variance(sourcePath):
                         valid_data = CalculateValidData(readFile, m)                # exclude missing values 
                         Var = np.var(readFile.values[m, 0:valid_data])
                         variance = np.vstack((variance, Var))
-                    #print 'lengths = ', np.shape(variance_array), np.shape(variance)
                     #print len(variance_array), len(variance)
-                    #print 'valid = ', valid_data
                     
                     # if there is a mismatch in row numbers between files, add 'nan' to make up for the extra row (we only have one sample mismatch)
                     try:
