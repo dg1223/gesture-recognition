@@ -16,11 +16,11 @@ from itertools import combinations
 
 start = time.clock()
 
-source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Left\\'             # source folder
-source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P8\\Right\\'
-source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Left Sorted\\'         # source folder
-source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P8\\Right Sorted\\'        # naturally sort the file list
-destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P8\\original\\'
+source_left         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P11\\Left\\'             # source folder
+source_right        = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Hands_Sorted\\P11\\Right\\'
+source_left_Euclid  = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P11\\Left Sorted\\'         # source folder
+source_right_Euclid = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Euclidean\\P11\\Right Sorted\\'        # naturally sort the file list
+destination         = 'C:\\Users\\Shamir\\Desktop\\Grad\\Participant Study\\Feature Extraction\\P11\\original\\'
 left                = 'LeftHandFeatures'
 right               = 'RightHandFeatures'
 fileformat          = '.csv'
@@ -29,9 +29,19 @@ frequency_quat      = 110                                                       
 frequency_euc       = 82.5                                                      # 82.5 Hz
 
 
+# pandas module has the same function: pandas.DataFrame.count(); their's is ~5% faster
+def CalculateValidData(currentFile, currentRow):
+    """ 
+    Calculatea the number of actual values in the array 
+    input parameters:   currentFile = file current read by pandas
+                        currentRow = row index
+    output: number of values in the dataset
+    
+    example: valid_data = CalculateValidData(readFile, m)    
 
-# Calculate the number of missing values in the array 
-def CalculateValidData(currentFile, currentRow):                                # currentFile = readFile, currentRow = m          
+    note: this function will only count the missing values out if they are at the end of a row. Not very useful!                
+    """
+      
     number_of_nan = len(currentFile.values[currentRow][pandas.isnull(currentFile.values[currentRow])])           
     length_of_array = len(currentFile.values[currentRow])
     valid_datapoints = length_of_array - number_of_nan    
@@ -41,7 +51,7 @@ def CalculateValidData(currentFile, currentRow):                                
 def Variance(sourcePath):
     
     for i in range(len(os.listdir(sourcePath))):                                # we have 6 files corresponding to 6 gestures
-        gesture = os.listdir(sourcePath)[i]                                     # Jab, Uppercut, Throw, Jets, Block, Asgard
+        gesture = os.listdir(sourcePath)[i]                                     # Jab, Uppercut, Throw, Lift, Block, Sway
         copy = False            
         variance_array = []
             
@@ -361,9 +371,11 @@ def AngularVelocity(sourcePath):
                             beta       = n + 1          
                             gamma      = n + 2
                             try:
-                                readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
-                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
-                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                                ### HUGE BUGS: Used beta index instead of gamma index for Spin: readFile.values[m, beta] shuold be readFile.values[m, gamma] for Spin (**now fixed)
+                                ###            readFile.values[m, gamma]  = ... + spinVelocity, not ... * spinVelocity
+                                readFile.values[m, alpha]  = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
+                                readFile.values[m, beta]   = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
+                                readFile.values[m, gamma]  = (precessionVelocity * np.cos(readFile.values[m, beta])) + spinVelocity                                                                                      # gamma compomemt
                             except ValueError:
                                 #print '2nd catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
                                 continue
@@ -456,9 +468,11 @@ def AngularVelocity(sourcePath):
                             beta       = n + 1          
                             gamma      = n + 2
                             try:
-                                readFile.values[m, alpha] = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
-                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
-                                readFile.values[m, beta]  = (precessionVelocity * np.cos(readFile.values[m, beta])) * spinVelocity                                                                                      # gamma compomemt
+                                ### HUGE BUGS: Used beta index instead of gamma index for Spin: readFile.values[m, beta] shuold be readFile.values[m, gamma] for Spin (**now fixed)
+                                ###            readFile.values[m, gamma]  = ... + spinVelocity, not ... * spinVelocity
+                                readFile.values[m, alpha]  = (precessionVelocity * np.sin(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) + (nutationVelocity * np.cos(readFile.values[m, gamma]))    # alpha component
+                                readFile.values[m, beta]   = (precessionVelocity * np.cos(readFile.values[m, gamma]) * np.sin(readFile.values[m, beta])) - (nutationVelocity * np.sin(readFile.values[m, gamma]))    # beta component
+                                readFile.values[m, gamma]  = (precessionVelocity * np.cos(readFile.values[m, beta])) + spinVelocity                                                                                      # gamma compomemt
                             except ValueError:
                                 #print '2nd catch (copy = True) at file, m, n = ', csvfile[-6:], m, n
                                 continue
@@ -664,7 +678,7 @@ def extractFeatures():
     name = '5.covariance'
     covar_r.to_csv(destination + name + fileformat, header = False, index = False)
     
-    #print 'lengths = ', np.shape(variance_r), np.shape(range_r), np.shape(velocity_r), np.shape(AngVel_r), np.shape(covar_r)
+    print 'lengths = ', np.shape(variance_r), np.shape(range_r), np.shape(velocity_r), np.shape(AngVel_r), np.shape(covar_r)
     
     #fullFile_r = pandas.concat([variance_r, range_r, velocity_r, AngVel_r, covar_r], axis = 1)
     #fullFile_r.to_csv(destination + right + fileformat, header = False, index = False)
