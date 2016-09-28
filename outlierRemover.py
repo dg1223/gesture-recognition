@@ -3,6 +3,8 @@
 Created on Fri Jun 05 23:31:44 2015
 
 @author: Shamir
+
+Comment (Sep 27, 2016): Should have tried interquartile range
 """
 import pandas
 import os
