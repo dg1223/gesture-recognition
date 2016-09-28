@@ -294,7 +294,8 @@ def Velocity(sourcePath):
     return fullFile3
 
 
-# function for extracting Angular Velocity (uses only one file - combined Euclidean)
+# function for extracting Angular Velocity (uses only one file - combined Euclidean). The alpha, beta and gamma indexes should be defined
+# only once
 def AngularVelocity(sourcePath):
     
     for i in range(len(os.listdir(sourcePath))):                                          # we have 6 files corresponding to 6 gestures
@@ -366,7 +367,8 @@ def AngularVelocity(sourcePath):
                         nutationVelocity   = nutation/time
                         spinVelocity       = spin/time
                                                                 
-                        for n in range(0, number_of_columns - 3, 3):                                                
+                        for n in range(0, number_of_columns - 3, 3):
+                            # This is dumb. Define these variables only once.
                             alpha      = n
                             beta       = n + 1          
                             gamma      = n + 2
