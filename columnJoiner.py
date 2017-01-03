@@ -35,7 +35,7 @@ def Join(sourcePath, destinationPath):
         fourthFile = pandas.read_csv(sourcePath + filelist[i + 3], header = None)
         print 'lengths = ', len(firstFile.values[0]), len(secondFile.values[0]), len(thirdFile.values[0]), len(fourthFile.values[0])
         
-        # Force largest array to drop one column to become equal with others (assuming dropping one columns should suffice)
+        # Force largest array to drop one column to become equal with others (assuming dropping one column suffices)
         lengths = [len(firstFile.values[0]), len(secondFile.values[0]), len(thirdFile.values[0]), len(fourthFile.values[0])]
         max_len_index = lengths.index(max(lengths))
         if max_len_index == 0:
