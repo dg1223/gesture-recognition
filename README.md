@@ -1,7 +1,7 @@
 # Paper
-[Quaternion-Based Gesture Recognition Using Wireless Wearable Motion Capture Sensors ] (https://www.mdpi.com/1424-8220/16/5/605)
+[Quaternion-Based Gesture Recognition Using Wireless Wearable Motion Capture Sensors ](https://www.mdpi.com/1424-8220/16/5/605)
 
-[Dataset] (https://www.mdpi.com/1424-8220/16/5/605/s1)
+[Dataset](https://www.mdpi.com/1424-8220/16/5/605/s1)
 
 # ThesisCodes
 Codes for my Master's Thesis
