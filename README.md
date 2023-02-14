@@ -3,10 +3,10 @@
 
 [Dataset](https://www.mdpi.com/1424-8220/16/5/605/s1)
 
-# ThesisCodes
+# Codes
 Codes for my Master's Thesis
 
-# Data Extraction and Conversion
+## Data Extraction and Conversion
 Replace Missing Values.py - Replaces missing values for the Beta angle after conversion from quaternion to Euclidean.
 
 add_headers.py - adds appropriate header columns to each dataset
@@ -23,20 +23,20 @@ convert2euclidean.py - convert quaternion components to Euclidean components
 
 outlierRemover.py - removes outliers by applying linear interpolation using a 10-point sliding window
 
-# Data Paritioning (not Train, Validation, Test)
+## Data Paritioning (not Train, Validation, Test)
 sortLeftRight.py - separates the left and right-hand gestures and turns them into individual datasets
 
 *Training, Validation and Test sets were created using Weka 3.6
 
-# Feature Extraction
+## Feature Extraction
 featureExtraction.py - Extracts five features from every dataset: Variance, Range, Velocity, Angular Velocity, Covariance
 
-# Test Scripts
+## Test Scripts
 test.py, test2.py, test3.py, testFileSize.py, test_covariance.py, test_range.py, test_variance.py, test_velocity.py
 *Each file has its own description
 
-# Miscellaneous (just for fun!)
+## Miscellaneous (just for fun!)
 countDatapoints.py - counts the total number of datapoints in a dataset
 
-# Data Preprocessing/Model Evaluation/Dimensionality Reduction/Feature Selection/Result Analysis
+## Data Preprocessing/Model Evaluation/Dimensionality Reduction/Feature Selection/Result Analysis
 were done in Weka 3.6
