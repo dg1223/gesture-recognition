@@ -1,9 +1,10 @@
+# Paper
+[Quaternion-Based Gesture Recognition Using Wireless Wearable Motion Capture Sensors ] (https://www.mdpi.com/1424-8220/16/5/605)
+
+[Dataset] (https://www.mdpi.com/1424-8220/16/5/605/s1)
+
 # ThesisCodes
-Final codes for my Master's Thesis go here
-
-Started the project with an OOP approach in mind but ended up writing a few scripts due to shortage of time.
-
-Short description of the scripts (not in order):
+Codes for my Master's Thesis
 
 # Data Extraction and Conversion
 Replace Missing Values.py - Replaces missing values for the Beta angle after conversion from quaternion to Euclidean.
