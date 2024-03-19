@@ -43,7 +43,7 @@ featureExtraction.py - Extracts five features from every dataset: Variance, Rang
 test.py, test2.py, test3.py, testFileSize.py, test_covariance.py, test_range.py, test_variance.py, test_velocity.py
 *Each file has its own description
 
-## Miscellaneous (just for fun!)
+## Miscellaneous
 countDatapoints.py - counts the total number of datapoints in a dataset
 
 ## Data Preprocessing/Model Evaluation/Dimensionality Reduction/Feature Selection/Result Analysis
