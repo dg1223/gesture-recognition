@@ -1,3 +1,11 @@
+<img src="https://github.com/dg1223/gesture-recognition/assets/4992116/3519df7c-d93d-40ce-b415-f0e7129ec85e" alt="body-worn sensors" width=25%>
+&nbsp
+<img src="https://github.com/dg1223/gesture-recognition/assets/4992116/afd31985-249a-4755-98e3-71613f6457f8" alt="data" width=41%>
+&nbsp
+<img src="https://github.com/dg1223/gesture-recognition/assets/4992116/e18d7256-b534-4f7d-8613-154a86a16d19" alt="result" width=67%>
+
+
+
 # Paper
 [Quaternion-Based Gesture Recognition Using Wireless Wearable Motion Capture Sensors ](https://www.mdpi.com/1424-8220/16/5/605)
 
